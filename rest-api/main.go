@@ -6,6 +6,7 @@ import (
 	"github.com/gorilla/mux"
 	"log"
 	"net/http"
+	"strconv"
 )
 
 const port string = ":4000"
@@ -27,7 +28,6 @@ type champion struct {
 
 // http 요청에 쓰일 구조체, 속성명을 대문자로 시작해야 외부에서 포인터를 통해 값 할당이 가능
 type requestBody struct {
-	Id   int
 	Name string
 }
 
@@ -50,6 +50,10 @@ func main() {
 	router.HandleFunc("/champions", getChampions).Methods("GET")
 	// POST 함수 연결
 	router.HandleFunc("/champions", postChampions).Methods("POST")
+	// PATCH 함수 연결
+	router.HandleFunc("/champions/{id:[0-9]+}", patchChampions).Methods("PATCH")
+	// DELETE 함수 설정
+	router.HandleFunc("/champions/{id:[0-9]+}", deleteChampions).Methods("DELETE")
 
 	fmt.Printf("Listening on http://localhost%s\n", port)
 	// 서버 실행
@@ -105,6 +109,43 @@ func postChampions(rw http.ResponseWriter, r *http.Request) {
 
 	// 생성 완료 후 Http code 201 created 로 response 해더 설정
 	rw.WriteHeader(http.StatusCreated)
+	return
+}
+
+func patchChampions(rw http.ResponseWriter, r *http.Request) {
+	// request 값을 받을 구조체 변수 선언 및 할당
+	var requestBody requestBody
+	json.NewDecoder(r.Body).Decode(&requestBody)
+
+	// Router 에서 id로 정의 한 값은 mux 를 통해 받을 수 있음
+	vars := mux.Vars(r)
+	id, _ := strconv.Atoi(vars["id"])
+
+	// 이름 업데이트
+	for _, champion := range champions {
+		if champion.ID == id {
+			champion.Name = requestBody.Name
+			break
+		}
+	}
+
+	rw.WriteHeader(http.StatusOK)
+	return
+}
+
+func deleteChampions(rw http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	id, _ := strconv.Atoi(vars["id"])
+
+	// 데이터 삭제
+	for index, champion := range champions {
+		if champion.ID == id {
+			champions = append(champions[:index], champions[index+1:]...)
+			break
+		}
+	}
+
+	rw.WriteHeader(http.StatusOK)
 	return
 }
 

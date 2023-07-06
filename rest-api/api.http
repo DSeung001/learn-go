@@ -3,7 +3,40 @@ POST http://localhost:4000/champions
 Content-Type: application/json
 
 {
-  "Name":"나르"
+  "Name":"다리우스"
 }
+### 챔피언 추가
+POST http://localhost:4000/champions
+Content-Type: application/json
+
+{
+  "Name":"가렌"
+}
+### 챔피언 추가
+POST http://localhost:4000/champions
+Content-Type: application/json
+
+{
+  "Name":"소나"
+}
+### 챔피언 추가
+POST http://localhost:4000/champions
+Content-Type: application/json
+
+{
+  "Name":"나파리"
+}
+
+### 챔피언 업데이트
+PATCH http://localhost:4000/champions/2
+Content-Type: application/json
+
+{
+  "Name":"아트록스"
+}
+### 챔피언 삭제
+DELETE http://localhost:4000/champions/2
+Content-Type: application/json
+
 ###
 http://localhost:4000/champions
