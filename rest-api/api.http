@@ -1,0 +1,9 @@
+### 챔피언 추가
+POST http://localhost:4000/champions
+Content-Type: application/json
+
+{
+  "Name":"나르"
+}
+###
+http://localhost:4000/champions
