@@ -6,6 +6,7 @@ import (
 	"github.com/gorilla/mux"
 	"log"
 	"net/http"
+	"rest-api.com/db"
 	"strconv"
 )
 
@@ -101,10 +102,9 @@ func postChampions(rw http.ResponseWriter, r *http.Request) {
 	json.NewDecoder(r.Body).Decode(&requestBody)
 
 	// request 로 받은 Name 값을 사용하여 챔피언 추가
-	newChampion := &champion{
-		newID(),
-		requestBody.Name,
-	}
+	newChampion := &champion{}
+
+	db.SaveChampion([]byte(requestBody.Name))
 	champions = append(champions, newChampion)
 
 	// 생성 완료 후 Http code 201 created 로 response 해더 설정
@@ -147,13 +147,4 @@ func deleteChampions(rw http.ResponseWriter, r *http.Request) {
 
 	rw.WriteHeader(http.StatusOK)
 	return
-}
-
-// newID : 새롭게 추가할 값의 아이디 가져오기
-func newID() int {
-	if len(champions) > 0 {
-		return champions[len(champions)-1].ID + 1
-	} else {
-		return 1
-	}
 }

@@ -1,4 +1,4 @@
-package main
+package db
 
 import (
 	"github.com/boltdb/bolt"
@@ -29,4 +29,27 @@ func DB() *bolt.DB {
 		utils.HandleErr(err)
 	}
 	return db
+}
+
+func Close() {
+	DB().Close()
+}
+
+// SaveChampion :
+func SaveChampion(data []byte) {
+	err := DB().Update(func(tx *bolt.Tx) error {
+		bucket := tx.Bucket([]byte(championsBucket))
+		err := bucket.Put(utils.IntToBytes(newID()), data)
+		return err
+	})
+	utils.HandleErr(err)
+}
+
+// newID : 새롭게 추가할 값의 아이디 가져오기
+func newID() int {
+	if len(champions) > 0 {
+		return champions[len(champions)-1].ID + 1
+	} else {
+		return 1
+	}
 }
