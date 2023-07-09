@@ -16,7 +16,7 @@ type champion struct {
 var champions []*champion
 
 func main() {
-	resp, err := http.Get("http://localhost:4000")
+	resp, err := http.Get("http://localhost:4000/champions")
 	utils.HandleErr(err)
 
 	jsonBody, err := io.ReadAll(resp.Body)
