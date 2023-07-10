@@ -5,23 +5,26 @@ import (
 	"rest-api.com/utils"
 )
 
+// dbName : DB 명으로 해당 이름으로 파일이 생성됩니다
+// championBucket : Bucket 은 RDBMS 의 테이블과 같은 역할을 합니다.
 const (
-	dbName          = "blockchain.db"
+	dbName          = "champions.db"
 	championsBucket = "champion"
 )
 
 var db *bolt.DB
 
+// DB : db 커넥션
 func DB() *bolt.DB {
 	if db == nil {
-		// bolt.Open : 열기는 지정된 경로에서 DB를 작성하고 열고 없으면 생성, mode 값으로 파일권한 부여
+		// bolt.Open : dbName 으로 데이터베이스 열기, 뒤에 0600 은 파일 권한
 		dbPointer, err := bolt.Open(dbName, 0600, nil)
 		db = dbPointer
 		utils.HandleErr(err)
 
 		// Update : 읽기-쓰기 트랜잭션 실행
 		err = db.Update(func(tx *bolt.Tx) error {
-			// 없으면 버켓 생성
+			// CreateBucketIfNotExists : 해당 버켓명이 없으면 버켓 생성
 			_, err := tx.CreateBucketIfNotExists([]byte(championsBucket))
 			utils.HandleErr(err)
 			return err
@@ -31,6 +34,7 @@ func DB() *bolt.DB {
 	return db
 }
 
+// Close : db connection 종료
 func Close() {
 	DB().Close()
 }
@@ -55,7 +59,7 @@ func ReadChampions() map[int]string {
 		// Assume bucket exists and has keys
 		bucket := tx.Bucket([]byte(championsBucket))
 		cursor := bucket.Cursor()
-
+		// 커서로 bucket 내부를 돌며 map 에 저장
 		for key, value := cursor.First(); key != nil; key, value = cursor.Next() {
 			m[utils.BytesToInt(key)] = string(value)
 		}
@@ -68,6 +72,7 @@ func ReadChampions() map[int]string {
 func UpdateChampion(id int, name string) {
 	utils.HandleErr(DB().Update(func(tx *bolt.Tx) error {
 		bucket := tx.Bucket([]byte(championsBucket))
+		// id가 존재하는 값이면 값 덮어씌우기
 		err := bucket.Put(utils.IntToBytes(id), []byte(name))
 		return err
 	}))
@@ -77,6 +82,7 @@ func UpdateChampion(id int, name string) {
 func DeleteChampion(id int) {
 	utils.HandleErr(DB().Update(func(tx *bolt.Tx) error {
 		bucket := tx.Bucket([]byte(championsBucket))
+		// id로 데이터 삭제
 		err := bucket.Delete(utils.IntToBytes(id))
 		return err
 	}))
