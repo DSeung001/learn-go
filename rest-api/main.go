@@ -7,6 +7,7 @@ import (
 	"log"
 	"net/http"
 	"rest-api.com/db"
+	"rest-api.com/utils"
 	"strconv"
 )
 
@@ -22,17 +23,10 @@ type urlDescription struct {
 	Payload     string `json:"payload,omitempty"`
 }
 
-type champion struct {
-	ID   int    `json:"id"`
-	Name string `json:"name"`
-}
-
 // http 요청에 쓰일 구조체, 속성명을 대문자로 시작해야 외부에서 포인터를 통해 값 할당이 가능
 type requestBody struct {
 	Name string
 }
-
-var champions []*champion
 
 // jsonContentTypeMiddleware : 반환 타입의 포멧을 Content-Type application/json 으로 정의
 func jsonContentTypeMiddleware(next http.Handler) http.Handler {
@@ -43,6 +37,8 @@ func jsonContentTypeMiddleware(next http.Handler) http.Handler {
 }
 
 func main() {
+	defer db.Close()
+
 	// 라우터 생성
 	router := mux.NewRouter()
 	router.Use(jsonContentTypeMiddleware)
@@ -93,19 +89,17 @@ func documentation(rw http.ResponseWriter, r *http.Request) {
 }
 
 func getChampions(rw http.ResponseWriter, r *http.Request) {
-	json.NewEncoder(rw).Encode(champions)
+	// 데이터 가져오기
+	json.NewEncoder(rw).Encode(db.ReadChampions())
 }
 
 func postChampions(rw http.ResponseWriter, r *http.Request) {
 	// request 값을 받을 구조체 변수 선언
 	var requestBody requestBody
-	json.NewDecoder(r.Body).Decode(&requestBody)
+	utils.HandleErr(json.NewDecoder(r.Body).Decode(&requestBody))
 
-	// request 로 받은 Name 값을 사용하여 챔피언 추가
-	newChampion := &champion{}
-
-	db.SaveChampion([]byte(requestBody.Name))
-	champions = append(champions, newChampion)
+	// 데이터 생성
+	db.SaveChampion(requestBody.Name)
 
 	// 생성 완료 후 Http code 201 created 로 response 해더 설정
 	rw.WriteHeader(http.StatusCreated)
@@ -121,13 +115,8 @@ func patchChampions(rw http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	id, _ := strconv.Atoi(vars["id"])
 
-	// 이름 업데이트
-	for _, champion := range champions {
-		if champion.ID == id {
-			champion.Name = requestBody.Name
-			break
-		}
-	}
+	// 데이터 업데이트
+	db.UpdateChampion(id, requestBody.Name)
 
 	rw.WriteHeader(http.StatusOK)
 	return
@@ -138,12 +127,7 @@ func deleteChampions(rw http.ResponseWriter, r *http.Request) {
 	id, _ := strconv.Atoi(vars["id"])
 
 	// 데이터 삭제
-	for index, champion := range champions {
-		if champion.ID == id {
-			champions = append(champions[:index], champions[index+1:]...)
-			break
-		}
-	}
+	db.DeleteChampion(id)
 
 	rw.WriteHeader(http.StatusOK)
 	return
