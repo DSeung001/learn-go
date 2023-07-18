@@ -19,4 +19,10 @@ func main() {
 	x, y := <-c, <-c
 
 	fmt.Println(x, y, x+y)
+
+	ch := make(chan int, 2)
+	ch <- 1
+	ch <- 2
+	fmt.Println(<-ch)
+	fmt.Println(<-ch)
 }
