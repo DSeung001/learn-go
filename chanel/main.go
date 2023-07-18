@@ -2,24 +2,29 @@ package main
 
 import "fmt"
 
-func fibonacci(n int, c chan int) {
+func fibonacci(c, quit chan int) {
 	x, y := 0, 1
-	for i := 0; i < n; i++ {
-		c <- x
-		x, y = y, x+y
+	// 무한 루프
+	for {
+		select {
+		case c <- x:
+			x, y = y, x+y
+		case <-quit:
+			// quit 에 값이 들어오면 인식 (quit 에 값을 뽑을 수 있음)
+			fmt.Println("quit")
+			return
+		}
 	}
-	// chan 에 신규 값 방지
-	close(c)
 }
 
 func main() {
-	c := make(chan int, 10)
-	fmt.Println(cap(c))
-
-	// goroutine 에 chan 사이즈와 채널을 파라미터로
-	go fibonacci(cap(c), c)
-
-	for i := range c {
-		fmt.Println(i)
-	}
+	c := make(chan int)
+	quit := make(chan int)
+	go func() {
+		for i := 0; i < 10; i++ {
+			fmt.Println(<-c)
+		}
+		quit <- 0
+	}()
+	fibonacci(c, quit)
 }
