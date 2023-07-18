@@ -1,30 +1,96 @@
 package main
 
-import "fmt"
+import (
+	"fmt"
+	"time"
+)
 
-func fibonacci(c, quit chan int) {
-	x, y := 0, 1
-	// 무한 루프
-	for {
-		select {
-		case c <- x:
-			x, y = y, x+y
-		case <-quit:
-			// quit 에 값이 들어오면 인식 (quit 에 값을 뽑을 수 있음)
-			fmt.Println("quit")
-			return
-		}
+/*
+	예제 주소 : https://hamait.tistory.com/1017
+*/
+
+func main() {
+
+}
+
+// 패턴3 : server1, server2 중 가장 먼저되는게 출력
+func pattern3() {
+	output1 := make(chan string)
+	output2 := make(chan string)
+	go server1(output1)
+	go server2(output2)
+	time.Sleep(1 * time.Second)
+	select {
+	case s1 := <-output1:
+		fmt.Println(s1)
+	case s2 := <-output2:
+		fmt.Println(s2)
+
 	}
 }
 
-func main() {
-	c := make(chan int)
-	quit := make(chan int)
-	go func() {
-		for i := 0; i < 10; i++ {
-			fmt.Println(<-c)
+func server1(ch chan string) {
+	ch <- "from server1"
+}
+func server2(ch chan string) {
+	ch <- "from server2"
+}
+
+// 패턴2 : process를 기다림
+func pattern2() {
+	ch := make(chan string)
+	go process(ch)
+	for {
+		time.Sleep(1 * time.Second)
+		select {
+		case v := <-ch:
+			fmt.Println("received value: ", v)
+			return
+		default:
+			fmt.Println("no value received")
 		}
-		quit <- 0
+
+		scheduling()
+	}
+}
+
+func process(ch chan string) {
+	time.Sleep(4 * time.Second)
+	ch <- "process successful"
+}
+
+func scheduling() {
+	// do something
+}
+
+// 패턴 1 : case 문의 채널 값이 들어올 때 까지 블럭되는 기본문
+func pattern1() {
+	c1 := make(chan string)
+	c2 := make(chan string)
+
+	go func() {
+		for {
+			time.Sleep(2 * time.Second)
+			c1 <- "one"
+		}
 	}()
-	fibonacci(c, quit)
+
+	go func() {
+		for {
+			time.Sleep(4 * time.Second)
+			c1 <- "two"
+		}
+	}()
+
+	for {
+		fmt.Println("start select -----------------")
+		// 각 채널에 값이 들어올 때를 핸들링 가능!
+		select {
+		case msg1 := <-c1:
+			fmt.Println("received", msg1)
+		case msg2 := <-c2:
+			fmt.Println("received", msg2)
+		}
+		fmt.Println("end select -----------------\n\n")
+	}
 }
