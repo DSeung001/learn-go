@@ -10,7 +10,32 @@ import (
 */
 
 func main() {
+	pattern4()
+}
 
+// 패턴4 : 5초 이내에 입력값을 넣지 않으면 만료되는 채널
+func pattern4() {
+	scheduler := make(chan string)
+	go consuming(scheduler)
+	go producing(scheduler)
+
+	time.Sleep(100 * time.Second)
+}
+
+func consuming(scheduler chan string) {
+	select {
+	case <-scheduler:
+		fmt.Println("이름을 입력받았습니다")
+	case <-time.After(5 * time.Second):
+		fmt.Println("시간이 만료되었습니다.")
+	}
+}
+
+func producing(scheduler chan string) {
+	var name string
+	fmt.Println("이름 : ")
+	fmt.Scanln(&name)
+	scheduler <- name
 }
 
 // 패턴3 : server1, server2 중 가장 먼저되는게 출력
