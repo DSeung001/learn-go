@@ -10,7 +10,38 @@ import (
 */
 
 func main() {
-	pattern4()
+	pattern6()
+}
+
+// 패턴6 : 파라미터로 채널 값을 넣을 수 있음
+var scheduler6 chan string
+
+func consuming6(prompt string) {
+	fmt.Println("consuming 호출됨")
+	select {
+	case scheduler6 <- prompt:
+		fmt.Println("이름을 입력받았습니다 : ", <-scheduler6)
+	case <-time.After(5 * time.Second):
+		fmt.Println("시간이 지났습니다.")
+	}
+}
+
+func producing6(console chan string) {
+	var name string
+	fmt.Println("이름 : ")
+	fmt.Scanln(&name)
+	console <- name
+}
+
+func pattern6() {
+	console := make(chan string, 1)
+	scheduler6 = make(chan string, 1)
+
+	go func() {
+		consuming6(<-console)
+	}()
+	go producing6(console)
+	time.Sleep(100 * time.Second)
 }
 
 // 패턴4 : 5초 이내에 입력값을 넣지 않으면 만료되는 채널
