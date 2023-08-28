@@ -1,0 +1,25 @@
+.regex-container{
+    border: 1px solid black;
+    max-width: 400px;
+    text-align: center;
+    margin: 0 auto;
+}
+
+.text-input {
+    width: 250px;
+    padding: 3px;
+    font-size: 15px;
+}
+
+.button-submit {
+    font-size: 15px;
+    padding: 2px;
+}
+
+.regex-container .result-container {
+    padding: 10px;
+    text-align: left;
+    border-bottom: 1px solid black;
+    width: 200px;
+    margin : 10px auto;
+}
