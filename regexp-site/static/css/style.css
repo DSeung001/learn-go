@@ -19,7 +19,6 @@
 .regexp-container .result-container {
     padding: 10px;
     text-align: left;
-    border-bottom: 1px solid black;
     width: 200px;
     margin : 10px auto;
 }

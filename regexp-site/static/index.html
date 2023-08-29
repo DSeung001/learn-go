@@ -4,10 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" type="text/css" href="css/style.css">
-    <title>Chat</title>
-</head>
-<html>
-<head>
     <title>URL 정규식 체크</title>
 </head>
 <body>
@@ -31,8 +27,9 @@
         e.preventDefault()
         $.post("/regexp", {url: $("#url-input").val()})
             .done(function (response) {
-                response.forEach(reason =>{
-                    $("#participants").append(`<li>${reason}</li>`)
+                $(".result-list").empty()
+                response.forEach(item =>{
+                    $(".result-list").append(`<li>${item}</li>`)
                 })
             })
             .fail(function (jqXHR, textStatus, errorThrown) {
