@@ -9,7 +9,7 @@
 <body>
 <div class="regexp-container">
     <form id="regexp-form">
-        <h2>URL 정규식 체크</h2>
+        <h2>URL 해체기</h2>
         <input class="text-input" type="text" id="url-input" placeholder="URL을 입력하세요">
         <input class="button-submit" type="submit" value="검증">
         <div class="result-container">
@@ -27,9 +27,12 @@
         e.preventDefault()
         $.post("/regexp", {url: $("#url-input").val()})
             .done(function (response) {
+                console.log(response)
                 $(".result-list").empty()
                 response.forEach(item =>{
-                    $(".result-list").append(`<li>${item}</li>`)
+                    if(item !== ""){
+                        $(".result-list").append(`<li>${item}</li>`)
+                    }
                 })
             })
             .fail(function (jqXHR, textStatus, errorThrown) {
