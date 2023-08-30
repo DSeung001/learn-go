@@ -20,7 +20,7 @@ func Start(port int64) {
 
 func regexpHandler(w http.ResponseWriter, r *http.Request) {
 	var result []string
-	var pattern = `^(https?:\/\/)(.*?)(?:([-\w]+\.)+([a-zA-Z]{2,}))`
+	var pattern = `^(https?:\/\/)([-\w\.]+)([-\w\/]+)+(\?[-\=\%\w]+)(\&[-\=\%\w]+)+`
 
 	url := r.PostFormValue("url")
 

@@ -4,12 +4,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" type="text/css" href="css/style.css">
-    <title>URL 정규식 체크</title>
+    <title>URL 분석기</title>
 </head>
 <body>
 <div class="regexp-container">
     <form id="regexp-form">
-        <h2>URL 해체기</h2>
+        <h2>URL 분석기</h2>
         <input class="text-input" type="text" id="url-input" placeholder="URL을 입력하세요">
         <input class="button-submit" type="submit" value="검증">
         <div class="result-container">
@@ -23,22 +23,28 @@
 <script src="https://code.jquery.com/jquery-3.7.0.min.js"
         integrity="sha256-2Pmvv0kuTBOenSvLm6bvfBSSHrUJ+3A7x6P5Ebd07/g=" crossorigin="anonymous"></script>
 <script>
-    $("#regexp-form").submit(function (e){
+    $("#regexp-form").submit(function (e) {
         e.preventDefault()
-        $.post("/regexp", {url: $("#url-input").val()})
-            .done(function (response) {
-                console.log(response)
-                $(".result-list").empty()
-                response.forEach(item =>{
-                    if(item !== ""){
-                        $(".result-list").append(`<li>${item}</li>`)
-                    }
+        var url = $("#url-input").val();
+
+        if (url === "") {
+            alert("url을 입력해주세요")
+        } else {
+            $.post("/regexp", {url: url})
+                .done(function (response) {
+                    console.log(response)
+                    $(".result-list").empty()
+                    response.forEach(item => {
+                        if (item !== "") {
+                            $(".result-list").append(`<li>${item}</li>`)
+                        }
+                    })
                 })
-            })
-            .fail(function (jqXHR, textStatus, errorThrown) {
-                console.log(jqXHR)
-                console.log("API 요청 실패:", textStatus, errorThrown);
-            });
+                .fail(function (jqXHR, textStatus, errorThrown) {
+                    console.log(jqXHR)
+                    console.log("API 요청 실패:", textStatus, errorThrown);
+                });
+        }
     })
 </script>
 </body>

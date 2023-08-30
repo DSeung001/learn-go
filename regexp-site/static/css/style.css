@@ -1,6 +1,6 @@
 .regexp-container{
     border: 1px solid black;
-    max-width: 400px;
+    max-width: 700px;
     text-align: center;
     margin: 0 auto;
 }
@@ -19,6 +19,6 @@
 .regexp-container .result-container {
     padding: 10px;
     text-align: left;
-    width: 200px;
-    margin : 10px auto;
+    margin-bottom: 10px;
+    margin-left: 15px;
 }
