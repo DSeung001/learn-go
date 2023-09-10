@@ -4,7 +4,7 @@ import (
 	"strconv"
 )
 
-// AddLargeNumbers : 자료형을 넘는 숫자의 덧셈
+// AddLargeNumbers : 엄청 큰 숫자도 더할 수 있게 해줌
 func AddLargeNumbers(a, b string) string {
 	// 두 정수를 문자열에서 int 슬라이스로 변환
 	number1 := stringToIntSlice(a)
@@ -28,7 +28,7 @@ func AddLargeNumbers(a, b string) string {
 		carry = sum / 10
 	}
 
-	// 결과를 문자열로 변환 + 만약 number1과 number2가 같을 때의 carry 값도 더하기
+	// 결과를 문자열로 변환 + 만약 number1과 number2가 같은 자릿수로 carry 값이 생겼을 때 더하기
 	var resultString string
 	if carry > 0 {
 		resultString = strconv.Itoa(carry)

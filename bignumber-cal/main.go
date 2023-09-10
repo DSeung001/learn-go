@@ -1,14 +1,20 @@
 package main
 
 import (
-	"bignumber-cal.com/bignumber"
 	"fmt"
+	"math/big"
 )
 
 func main() {
-	// uint64가 아닌 문자열을 사용
-	var number1 = "18446744073709551"
-	var number2 = "18446744073709551616"
+	var number1 = new(big.Int)
+	var number2 = new(big.Int)
+	var result = new(big.Int)
 
-	fmt.Println(bignumber.AddLargeNumbers(number1, number2))
+	// 뒤에 base 파라티머에 경우는 10진수를 의미합니다.
+	number1.SetString("18446744073709551", 10)
+	number2.SetString("18446744073709551616", 10)
+
+	result.Add(number1, number2)
+
+	fmt.Println(result)
 }
