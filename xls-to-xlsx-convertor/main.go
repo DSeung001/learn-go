@@ -9,16 +9,17 @@ import (
 	"xls-to-xlsx-convertor.com/utils"
 )
 
-const xlsDirPath = "xls"
-const xlsxDirPath = "xlsx"
+const xlsDirPath = "resources/xls"
+const xlsxDirPath = "resources/xlsx"
 
 func main() {
 	// XLS 파일 경로
-	xlsFilePath := "example.xls"
-	fileNames := getStationNames()
+	fileNames := getXlsFileNames()
 
 	for _, fileName := range fileNames {
-		xlsFile, err := excelize.OpenFile(xlsDirPath + "/" + fileName)
+		xlsFilePath := xlsDirPath + "/" + fileName
+		xlsFile, err := excelize.OpenFile(xlsFilePath)
+
 		xlsxFilePath := changeFileExtension(xlsxDirPath+"/"+fileName, "xlsx")
 
 		utils.HandleErr(err)
@@ -28,7 +29,7 @@ func main() {
 	}
 }
 
-// 파일 확장자 변경 함수
+// changeFileExtension : 파일 확장자 변경
 func changeFileExtension(filePath, newExtension string) string {
 	fileBase := filepath.Base(filePath)
 	fileDir := filepath.Dir(filePath)
@@ -36,7 +37,8 @@ func changeFileExtension(filePath, newExtension string) string {
 	return filepath.Join(fileDir, fileName+"."+newExtension)
 }
 
-func getStationNames() []string {
+// getXlsFileNames : xls 파일 이름 가져오기
+func getXlsFileNames() []string {
 	var fileNames []string
 
 	// 폴더 열기
