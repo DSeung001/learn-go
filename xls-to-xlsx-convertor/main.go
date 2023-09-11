@@ -19,10 +19,9 @@ func main() {
 	for _, fileName := range fileNames {
 		xlsFilePath := xlsDirPath + "/" + fileName
 		xlsFile, err := excelize.OpenFile(xlsFilePath)
+		utils.HandleErr(err)
 
 		xlsxFilePath := changeFileExtension(xlsxDirPath+"/"+fileName, "xlsx")
-
-		utils.HandleErr(err)
 		utils.HandleErr(xlsFile.SaveAs(xlsxFilePath))
 
 		fmt.Printf("성공적으로 %s 파일을 %s 파일로 변환했습니다.\n", xlsFilePath, xlsxFilePath)
