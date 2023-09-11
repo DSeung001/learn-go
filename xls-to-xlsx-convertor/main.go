@@ -1,6 +1,7 @@
 package main
 
-// go get github.com/360EntSecGroup-Skylar/excelize 사용
+// go get github.com/360EntSecGroup-Skylar/excelize => xlsx 전용 라이브러리
+// 이 친구로 변경 필요 => https://github.com/extrame/xls
 import (
 	"fmt"
 	"github.com/360EntSecGroup-Skylar/excelize"
