@@ -4,10 +4,10 @@ package main
 // 이 친구로 변경 필요 => https://github.com/extrame/xls
 import (
 	"fmt"
+	"github.com/360EntSecGroup-Skylar/excelize"
 	"github.com/extrame/xls"
 	"log"
 	"os"
-	"path/filepath"
 	"xls-to-xlsx-convertor.com/utils"
 )
 
@@ -20,6 +20,8 @@ func main() {
 
 	for _, fileName := range fileNames {
 		xlsFilePath := xlsDirPath + "/" + fileName
+		var data [][]interface{}
+		var test []interface{}
 
 		// Excel 파일 열기
 		xlFile, err := xls.Open(xlsFilePath, "utf-8")
@@ -31,28 +33,43 @@ func main() {
 			sheet := xlFile.GetSheet(i)
 			// 행 순회
 			for rowIdx := 0; rowIdx <= int(sheet.MaxRow); rowIdx++ {
-
-				// 행이 값이 없을 경우 에러가 발생 => 어떻게 해결하지
 				row := sheet.Row(rowIdx)
+
+				data = append(data, test)
 
 				if row != nil {
 					// 열 순회
 					for colIdx := 0; colIdx < row.LastCol(); colIdx++ {
 						cell := row.Col(colIdx)
-						fmt.Printf("행: %d, 열: %d, 값: %s\n", rowIdx, colIdx, cell)
+						data[rowIdx] = append(data[rowIdx], cell)
 					}
 				}
 			}
+			fmt.Println(data)
 		}
+
+		utils.HandleErr(createXLSXFile(data, xlsxDirPath+"/"+fileName+"x"))
 	}
+
 }
 
-// changeFileExtension : 파일 확장자 변경
-func changeFileExtension(filePath, newExtension string) string {
-	fileBase := filepath.Base(filePath)
-	fileDir := filepath.Dir(filePath)
-	fileName := fileBase[:len(fileBase)-len(filepath.Ext(fileBase))]
-	return filepath.Join(fileDir, fileName+"."+newExtension)
+func createXLSXFile(data [][]interface{}, fileName string) error {
+	// 새로운 워크북 생성
+	file := excelize.NewFile()
+
+	for rowIndex, row := range data {
+		for colIndex, cellValue := range row {
+			cell := excelize.ToAlphaString(colIndex+1) + fmt.Sprintf("%d", rowIndex+1)
+			file.SetCellValue("Sheet1", cell, cellValue)
+		}
+	}
+
+	// 시트 저장
+	if err := file.SaveAs(fileName); err != nil {
+		return err
+	}
+
+	return nil
 }
 
 // getXlsFileNames : xls 파일 이름 가져오기
