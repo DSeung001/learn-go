@@ -4,7 +4,8 @@ package main
 // 이 친구로 변경 필요 => https://github.com/extrame/xls
 import (
 	"fmt"
-	"github.com/360EntSecGroup-Skylar/excelize"
+	"github.com/extrame/xls"
+	"log"
 	"os"
 	"path/filepath"
 	"xls-to-xlsx-convertor.com/utils"
@@ -19,13 +20,30 @@ func main() {
 
 	for _, fileName := range fileNames {
 		xlsFilePath := xlsDirPath + "/" + fileName
-		xlsFile, err := excelize.OpenFile(xlsFilePath)
-		utils.HandleErr(err)
 
-		xlsxFilePath := changeFileExtension(xlsxDirPath+"/"+fileName, "xlsx")
-		utils.HandleErr(xlsFile.SaveAs(xlsxFilePath))
+		// Excel 파일 열기
+		xlFile, err := xls.Open(xlsFilePath, "utf-8")
+		if err != nil {
+			log.Fatalf("엑셀 파일 열기 실패: %v", err)
+		}
 
-		fmt.Printf("성공적으로 %s 파일을 %s 파일로 변환했습니다.\n", xlsFilePath, xlsxFilePath)
+		for i := 0; i < xlFile.NumSheets(); i++ {
+			sheet := xlFile.GetSheet(i)
+			// 행 순회
+			for rowIdx := 0; rowIdx <= int(sheet.MaxRow); rowIdx++ {
+
+				// 행이 값이 없을 경우 에러가 발생 => 어떻게 해결하지
+				row := sheet.Row(rowIdx)
+
+				if row != nil {
+					// 열 순회
+					for colIdx := 0; colIdx < row.LastCol(); colIdx++ {
+						cell := row.Col(colIdx)
+						fmt.Printf("행: %d, 열: %d, 값: %s\n", rowIdx, colIdx, cell)
+					}
+				}
+			}
+		}
 	}
 }
 
