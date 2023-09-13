@@ -20,8 +20,8 @@ func main() {
 
 	for _, fileName := range fileNames {
 		xlsFilePath := xlsDirPath + "/" + fileName
-		var data [][]interface{}
-		var test []interface{}
+		var data [][]string
+		var arr []string
 
 		// Excel 파일 열기
 		xlFile, err := xls.Open(xlsFilePath, "utf-8")
@@ -35,7 +35,7 @@ func main() {
 			for rowIdx := 0; rowIdx <= int(sheet.MaxRow); rowIdx++ {
 				row := sheet.Row(rowIdx)
 
-				data = append(data, test)
+				data = append(data, arr)
 
 				if row != nil {
 					// 열 순회
@@ -53,7 +53,7 @@ func main() {
 
 }
 
-func createXLSXFile(data [][]interface{}, fileName string) error {
+func createXLSXFile(data [][]string, fileName string) error {
 	// 새로운 워크북 생성
 	file := excelize.NewFile()
 
