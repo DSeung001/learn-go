@@ -42,6 +42,8 @@ func main() {
 					for colIdx := 0; colIdx < row.LastCol(); colIdx++ {
 						cell := row.Col(colIdx)
 						data[rowIdx] = append(data[rowIdx], cell)
+
+						fmt.Printf("row : %d col : %d length : %d value : %v \n", rowIdx, colIdx, len(data[rowIdx]), cell)
 					}
 				}
 			}
@@ -59,7 +61,7 @@ func createXLSXFile(data [][]string, fileName string) error {
 
 	for rowIndex, row := range data {
 		for colIndex, cellValue := range row {
-			cell := excelize.ToAlphaString(colIndex+1) + fmt.Sprintf("%d", rowIndex+1)
+			cell := excelize.ToAlphaString(colIndex) + fmt.Sprintf("%d", rowIndex+1)
 			file.SetCellValue("Sheet1", cell, cellValue)
 		}
 	}
