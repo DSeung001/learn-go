@@ -1,7 +1,5 @@
 package main
 
-// go get github.com/360EntSecGroup-Skylar/excelize => xlsx 전용 라이브러리
-// 이 친구로 변경 필요 => https://github.com/extrame/xls
 import (
 	"fmt"
 	"github.com/360EntSecGroup-Skylar/excelize"
@@ -42,12 +40,9 @@ func main() {
 					for colIdx := 0; colIdx < row.LastCol(); colIdx++ {
 						cell := row.Col(colIdx)
 						data[rowIdx] = append(data[rowIdx], cell)
-
-						fmt.Printf("row : %d col : %d length : %d value : %v \n", rowIdx, colIdx, len(data[rowIdx]), cell)
 					}
 				}
 			}
-			fmt.Println(data)
 		}
 
 		utils.HandleErr(createXLSXFile(data, xlsxDirPath+"/"+fileName+"x"))
@@ -56,13 +51,14 @@ func main() {
 }
 
 func createXLSXFile(data [][]string, fileName string) error {
-	// 새로운 워크북 생성
+	// 파일 생성
 	file := excelize.NewFile()
 
 	for rowIndex, row := range data {
 		for colIndex, cellValue := range row {
-			cell := excelize.ToAlphaString(colIndex) + fmt.Sprintf("%d", rowIndex+1)
-			file.SetCellValue("Sheet1", cell, cellValue)
+			// A1 형태로 위치 값 생성
+			cellPosition := excelize.ToAlphaString(colIndex) + fmt.Sprintf("%d", rowIndex+1)
+			file.SetCellValue("Sheet1", cellPosition, cellValue)
 		}
 	}
 
@@ -70,7 +66,6 @@ func createXLSXFile(data [][]string, fileName string) error {
 	if err := file.SaveAs(fileName); err != nil {
 		return err
 	}
-
 	return nil
 }
 
