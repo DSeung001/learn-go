@@ -1,4 +1,4 @@
-package xlstoXlsx
+package xlsToXlsx
 
 import (
 	"fmt"
