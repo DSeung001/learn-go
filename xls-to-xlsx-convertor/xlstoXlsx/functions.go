@@ -13,12 +13,12 @@ import (
 func FileConversion(xlsDirPath string, xlsxDirPath string) {
 	fileNames := getFileNames(xlsDirPath)
 
-	for _, fileName := range fileNames {
+	for _, file := range fileNames {
 		var data [][]string
 		var arr []string
 
 		// Excel 파일 열기
-		xlsFile, err := xls.Open(fileName, "utf-8")
+		xlsFile, err := xls.Open(file.path, "utf-8")
 		if err != nil {
 			log.Fatalf("엑셀 파일 열기 실패: %v", err)
 		}
@@ -38,13 +38,18 @@ func FileConversion(xlsDirPath string, xlsxDirPath string) {
 				}
 			}
 		}
-		utils.HandleErr(createXLSXFile(data, xlsxDirPath+"/"+fileName+"x"))
+		utils.HandleErr(createXLSXFile(data, xlsxDirPath+"/"+file.name+"x"))
 	}
 }
 
+type file struct {
+	path string
+	name string
+}
+
 // getFileNames : dirPath 에 있는 파일 가져오기
-func getFileNames(dirPath string) []string {
-	var fileNames []string
+func getFileNames(dirPath string) []file {
+	var fileNames []file
 
 	// 폴더 열기
 	dir, err := os.Open(dirPath)
@@ -61,7 +66,10 @@ func getFileNames(dirPath string) []string {
 	// 파일 이름을 리스트에 넣기
 	for _, fileInfo := range fileInfos {
 		if !fileInfo.IsDir() {
-			fileNames = append(fileNames, dirPath+"/"+fileInfo.Name())
+			fileNames = append(fileNames, file{
+				name: fileInfo.Name(),
+				path: dirPath + "/" + fileInfo.Name(),
+			})
 		}
 	}
 
