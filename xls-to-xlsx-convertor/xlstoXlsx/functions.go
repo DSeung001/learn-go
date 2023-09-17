@@ -14,24 +14,21 @@ func FileConversion(xlsDirPath string, xlsxDirPath string) {
 	fileNames := getFileNames(xlsDirPath)
 
 	for _, fileName := range fileNames {
-		xlsFilePath := xlsDirPath + "/" + fileName
 		var data [][]string
 		var arr []string
 
 		// Excel 파일 열기
-		xlFile, err := xls.Open(xlsFilePath, "utf-8")
+		xlsFile, err := xls.Open(fileName, "utf-8")
 		if err != nil {
 			log.Fatalf("엑셀 파일 열기 실패: %v", err)
 		}
 
-		for i := 0; i < xlFile.NumSheets(); i++ {
-			sheet := xlFile.GetSheet(i)
+		for sheet := 0; sheet < xlsFile.NumSheets(); sheet++ {
+			sheet := xlsFile.GetSheet(sheet)
 			// 행 순회
 			for rowIdx := 0; rowIdx <= int(sheet.MaxRow); rowIdx++ {
 				row := sheet.Row(rowIdx)
-
 				data = append(data, arr)
-
 				if row != nil {
 					// 열 순회
 					for colIdx := 0; colIdx < row.LastCol(); colIdx++ {
@@ -45,7 +42,7 @@ func FileConversion(xlsDirPath string, xlsxDirPath string) {
 	}
 }
 
-// getFileNames : dirPath 에 있는 파일 이름 가져오기
+// getFileNames : dirPath 에 있는 파일 가져오기
 func getFileNames(dirPath string) []string {
 	var fileNames []string
 
@@ -64,7 +61,7 @@ func getFileNames(dirPath string) []string {
 	// 파일 이름을 리스트에 넣기
 	for _, fileInfo := range fileInfos {
 		if !fileInfo.IsDir() {
-			fileNames = append(fileNames, fileInfo.Name())
+			fileNames = append(fileNames, dirPath+"/"+fileInfo.Name())
 		}
 	}
 
