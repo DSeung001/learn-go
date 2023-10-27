@@ -13,4 +13,9 @@ func main() {
 	d := new(big.Float).Add(a, b)
 	fmt.Println(a, b, c, d)
 	fmt.Println(c.Cmp(d)) // 값의 비교
+
+	var x int8 = 1
+	x <<= 7
+	x >>= 7
+	fmt.Printf("%d %08b", x, x)
 }
