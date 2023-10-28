@@ -47,5 +47,5 @@ func main() {
 	user3 := User3{1, 2, 3, 4, 5}
 	fmt.Println(unsafe.Sizeof(user3))
 
-	// 결론 : 햇갈리면 메모리 값이 작은 필드를 앞에 배치하자
+	// 결론 : 햇갈리면 메모리 값이 작은 필드를 앞에 배치하자-
 }
