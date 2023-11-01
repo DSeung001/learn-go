@@ -5,7 +5,6 @@ $(function () {
 
     function getUrl(){
         $.get("/url")
-            console.log("get url")
             .done(function (response) {
                 console.log(response)
                 // response.forEach(name =>{

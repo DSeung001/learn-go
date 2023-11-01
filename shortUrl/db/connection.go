@@ -1,7 +1,6 @@
 package db
 
 import (
-	"context"
 	"database/sql"
 	"fmt"
 	"github.com/go-sql-driver/mysql"
@@ -11,12 +10,6 @@ import (
 	"shortUrl.com/utils"
 )
 
-// 전역변수
-var (
-	ctx context.Context
-	db  *sql.DB
-)
-
 type Url struct {
 	Id       int
 	AliasURL string
@@ -24,30 +17,15 @@ type Url struct {
 }
 
 func init() {
-	fmt.Println("init")
-	utils.HandleErr(godotenv.Load(".env"))
-
-	cfg := mysql.Config{
-		User:   os.Getenv("DBUSER"),
-		Passwd: os.Getenv("DBPASS"),
-		Net:    "tcp",
-		Addr:   os.Getenv("DBHOST") + ":" + os.Getenv("DBPORT"),
-		DBName: os.Getenv("DBNAME"),
-	}
-
-	// Get a database handle.
-	db, err := sql.Open("mysql", cfg.FormatDSN())
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	utils.HandleErr(db.Ping())
+	utils.HandleErr(getDBConnection().Ping())
 	fmt.Println("DB Connected!")
+	fmt.Println("DB")
 }
 
 func GetUrlList() []Url {
 	var urls []Url
-	rows, err := db.Query("SELECT * FROM url")
+
+	rows, err := getDBConnection().Query("SELECT * FROM url")
 	utils.HandleErr(err)
 
 	defer func(rows *sql.Rows) {
@@ -63,5 +41,25 @@ func GetUrlList() []Url {
 		}
 		urls = append(urls, url)
 	}
+	fmt.Println(urls)
 	return urls
+}
+
+func getDBConnection() *sql.DB {
+	// sql.Open의 경우 query 실행시 DB에 연결됨
+	db, err := sql.Open("mysql", getDataSourceName())
+	utils.HandleErr(err)
+	return db
+}
+
+func getDataSourceName() string {
+	utils.HandleErr(godotenv.Load(".env"))
+	cfg := mysql.Config{
+		User:   os.Getenv("DBUSER"),
+		Passwd: os.Getenv("DBPASS"),
+		Net:    "tcp",
+		Addr:   os.Getenv("DBHOST") + ":" + os.Getenv("DBPORT"),
+		DBName: os.Getenv("DBNAME"),
+	}
+	return cfg.FormatDSN()
 }
