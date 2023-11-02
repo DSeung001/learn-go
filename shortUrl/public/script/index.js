@@ -1,15 +1,27 @@
 $("document").ready(function () {
     reload()
 
-    $("form").submit(function(event) {
+    $(".post-container").submit(function(event) {
         postUrl();
         event.preventDefault();
     });
 
     // on을 통해 추가될 li에 이벤트 처리를 할 수 있음
     $("#urlUl").on("click", ".editButton", function (e) {
+        console.log("실행")
+        console.log($(this).parent().find(".edit-container"))
+
+        let listContainer = $(this).parent()
+        let editContainer = $(this).parent().parent().find(".edit-container")
+
+        listContainer.addClass("invisibility")
+        editContainer.removeClass("invisibility")
+
         e.preventDefault()
-        editUrl($(this).data("id"))
+    })
+
+    $("#urlUl").on("click", ".saveButton", function (e) {
+        editUrl($(this).data("id"), $(this).parent().parent().parent())
     })
 
     // on을 통해 추가될 li에 이벤트 처리를 할 수 있음
@@ -31,10 +43,24 @@ function getUrl() {
         url: "/url",
         success: function (response) {
             response.forEach(data => {
-                $("#urlUl").append(`<li>
-                        <a href='${data.fullUrl}' target="_blank" >${data.aliasUrl}</a>
-                        <button class="editButton" data-id='${data.id}'>Edit</button>
-                        <button class="deleteButton" data-id='${data.id}'>Delete</button>
+                $("#urlUl").append(`
+                    <li>
+                        <div class="edit-container invisibility">
+                            <form class="edit-form">  
+                                <label for="aliasUrl">Alias Url</label>
+                                <input type="text" class="aliasUrl" value="${data.aliasUrl}" required>
+                                <label for="fullUrl">Full Url</label>
+                                <input type="text" class="fullUrl" value="${data.fullUrl}" required>
+                                <button type="button" class="saveButton" data-id='${data.id}'>save</button>
+                            </form>
+                        </div>
+                        
+                        <div class="url-list-container">
+                            <a href='${data.fullUrl}' target="_blank" >${data.aliasUrl}</a>
+                            <button class="editButton" data-id='${data.id}'>Edit</button>
+                            <button class="deleteButton" data-id='${data.id}'>Delete</button>
+                        </div>
+                        
                     </li>`)
             })
         },
@@ -70,15 +96,19 @@ function postUrl() {
     });
 }
 
-function editUrl(id){
+function editUrl(id, listElement){
+    let editContainer = listElement.find(".edit-container")
+    let data = JSON.stringify({
+        aliasUrl: editContainer.find(".aliasUrl").val(),
+        fullUrl: editContainer.find(".fullUrl").val()
+    })
+    console.log(data)
+
     $.ajax({
         type: "PATCH",
         url: "url/" + id,
         contentType: "application/json",
-        data: JSON.stringify({
-            aliasUrl: $("#aliasUrl").val(),
-            fullUrl: $("#fullUrl").val()
-        }),
+        data: data,
         success: function(response) {
             console.log("edit success")
             reload()
@@ -104,4 +134,3 @@ function deleteUrl(id){
         }
     });
 }
-

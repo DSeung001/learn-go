@@ -1,16 +1,18 @@
-.main-container{
+.main-container {
   max-width: 600px;
   margin: 0 auto;
 
-  .input-container{
+  .input-container {
     text-align: center;
     padding: 5px;
-    label{
+
+    label {
       display: inline-block;
       width: 120px;
       text-align: left;
     }
-    input{
+
+    input {
       width: 400px;
       padding: 5px;
       border-radius: 5px;
@@ -18,11 +20,16 @@
     }
   }
 
-  input.submit{
+  input.submit {
     margin-top: 10px;
     padding: 5px 15px;
   }
+
   hr {
     margin-top: 30px;
+  }
+
+  .invisibility {
+    display: none;
   }
 }

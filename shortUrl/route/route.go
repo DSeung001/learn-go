@@ -81,13 +81,16 @@ func postUrlHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func patchUrlHandler(w http.ResponseWriter, r *http.Request) {
+	// Patch여서 PostForm으로 데이터를 못 받네
 	utils.HandleErr(r.ParseForm())
 	postData := r.PostForm
+	fmt.Println(postData)
 
 	url := model.Url{
 		AliasURL: postData.Get("aliasUrl"),
 		FullURL:  postData.Get("fullUrl"),
 	}
+	fmt.Println(url)
 
 	parts := strings.Split(r.URL.Path, "/")
 	if len(parts) < 3 {

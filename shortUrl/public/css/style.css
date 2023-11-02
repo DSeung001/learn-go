@@ -24,5 +24,8 @@
 .main-container hr {
   margin-top: 30px;
 }
+.main-container .invisibility {
+  display: none;
+}
 
 /*# sourceMappingURL=style.css.map */
