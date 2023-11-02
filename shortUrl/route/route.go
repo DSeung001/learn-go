@@ -65,7 +65,7 @@ func getUrl(w http.ResponseWriter, r *http.Request) {
 }
 
 func postUrl(w http.ResponseWriter, r *http.Request) {
-
+	fmt.Println("postUrl")
 }
 
 func patchUrl(w http.ResponseWriter, r *http.Request) {

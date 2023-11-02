@@ -6,35 +6,36 @@
           content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <link rel="stylesheet" type="text/css" href="/public/css/style.css">
+    <script src="https://code.jquery.com/jquery-3.7.0.min.js"
+            integrity="sha256-2Pmvv0kuTBOenSvLm6bvfBSSHrUJ+3A7x6P5Ebd07/g=" crossorigin="anonymous"></script>
     <title>Short URL</title>
 </head>
 <body>
-    <div class="main-container">
-        <h2>Short URL</h2>
-        <form action="/shorten" method="POST">
 
-            <div class="input-container">
-                <label for="short">NickName URL : </label>
-                <input type="text" id="short" name="short" required>
-            </div>
+<div class="main-container">
+    <h2>Short URL</h2>
+    <form action="/url" method="POST">
 
-            <div class="input-container">
-                <label for="url">Origin URL : </label>
-                <input type="url" id="url" name="url" required>
-            </div>
+        <div class="input-container">
+            <label for="short">NickName URL : </label>
+            <input type="text" id="short" name="short" required>
+        </div>
 
-            <input type="submit" value="단축하기" class="submit">
+        <div class="input-container">
+            <label for="url">Origin URL : </label>
+            <input type="url" id="url" name="url" required>
+        </div>
 
-        </form>
-        <hr/>
+        <input class="url-submit" type="submit" value="단축하기" class="submit">
 
-        <ul>
-            <li><a href="#">naver.com</a></li>
-        </ul>
-    </div>
+    </form>
+    <hr/>
 
-    <script src="https://code.jquery.com/jquery-3.7.0.min.js"
-            integrity="sha256-2Pmvv0kuTBOenSvLm6bvfBSSHrUJ+3A7x6P5Ebd07/g=" crossorigin="anonymous"></script>
-    <script src="/public/script/index.js"></script>
+    <ul id="url-ul">
+
+    </ul>
+</div>
+
+<script src="/public/script/index.js"></script>
 </body>
 </html>

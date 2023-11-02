@@ -11,15 +11,14 @@ import (
 )
 
 type Url struct {
-	Id       int
-	AliasURL string
-	FullURL  string
+	Id       int    `json:"id"`
+	AliasURL string `json:"aliasUrl"`
+	FullURL  string `json:"fullUrl"`
 }
 
 func init() {
 	utils.HandleErr(getDBConnection().Ping())
 	fmt.Println("DB Connected!")
-	fmt.Println("DB")
 }
 
 func GetUrlList() []Url {
@@ -41,7 +40,6 @@ func GetUrlList() []Url {
 		}
 		urls = append(urls, url)
 	}
-	fmt.Println(urls)
 	return urls
 }
 
