@@ -32,12 +32,13 @@ $("document").ready(function () {
 })
 
 // 단축 URL 목록 조회
+// 만약 http://localhost:4000가 아니면 수정 필요
 function getUrl() {
     $("#urlUl").empty()
 
     $.ajax({
         type: "GET",
-        url: "/url",
+        url: "http://localhost:4000/url",
         success: function (response) {
             if (response === null) {
                 $("#urlUl").append("<li>등록된 URL이 없습니다.</li>")
@@ -83,7 +84,7 @@ function postUrl() {
     // POST 요청 보내기
     $.ajax({
         type: "POST",
-        url: "/url",
+        url: "http://localhost:4000/url",
         data: postData,
         success: function (response) {
             $("#aliasUrl").val('')
@@ -107,7 +108,7 @@ function editUrl(id, listElement) {
 
     $.ajax({
         type: "PATCH",
-        url: "url/" + id,
+        url: "http://localhost:4000/url/" + id,
         contentType: "application/json",
         data: data,
         success: function () {
@@ -124,7 +125,7 @@ function editUrl(id, listElement) {
 function deleteUrl(id) {
     $.ajax({
         type: "DELETE",
-        url: "url/" + id,
+        url: "http://localhost:4000/url/" + id,
         success: function () {
             getUrl()
         },

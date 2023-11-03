@@ -18,7 +18,7 @@ func HandleErr(err error) {
 	}
 }
 
-func GetThirdIndexUrl(w http.ResponseWriter, r *http.Request) string {
+func GetThirdIndexUrl(r *http.Request) string {
 	parts := strings.Split(r.URL.Path, "/")
 	if len(parts) < 3 {
 		return ""

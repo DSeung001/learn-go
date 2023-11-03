@@ -93,12 +93,12 @@ func patchUrlHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	db.PatchUrl(url, utils.GetThirdIndexUrl(w, r))
+	db.PatchUrl(url, utils.GetThirdIndexUrl(r))
 	w.WriteHeader(http.StatusOK)
 }
 
 // deleteUrlHandler : DB에 저장된 url 정보를 삭제
 func deleteUrlHandler(w http.ResponseWriter, r *http.Request) {
-	db.DeleteUrl(utils.GetThirdIndexUrl(w, r))
+	db.DeleteUrl(utils.GetThirdIndexUrl(r))
 	w.WriteHeader(http.StatusOK)
 }
