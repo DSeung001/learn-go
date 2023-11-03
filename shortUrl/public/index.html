@@ -13,9 +13,10 @@
 <body>
 
 <div class="main-container">
+
+    <!-- URL 단축하기 FORM-->
     <h2>Short URL</h2>
     <form class="post-container" action="/url" method="POST">
-
         <div class="input-container">
             <label for="aliasUrl">Alias URL : </label>
             <input type="text" id="aliasUrl" name="alias-url" required>
@@ -26,13 +27,12 @@
             <input type="url" id="fullUrl" name="full-url" required>
         </div>
 
-        <input class="url-submit" type="submit" value="단축하기" class="submit">
-
+        <input class="url-submit" type="submit" value="Save" class="submit">
     </form>
     <hr/>
 
+    <!-- 단축 URL 리스트 -->
     <ul id="urlUl">
-
     </ul>
 </div>
 

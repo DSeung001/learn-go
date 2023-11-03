@@ -1,16 +1,15 @@
 $("document").ready(function () {
-    reload()
+    getUrl()
 
-    $(".post-container").submit(function(event) {
-        postUrl();
+    // 단축하기 Form에 submit 이벤트가 발생하면 postUrl 함수를 실행
+    $(".post-container").submit(function (event) {
         event.preventDefault();
+        postUrl();
     });
 
-    // on을 통해 추가될 li에 이벤트 처리를 할 수 있음
+    // on을 통해 동적으로 추가될 li에 이벤트 처리를 할 수 있음
+    // 단축 URL 수정 이벤트
     $("#urlUl").on("click", ".editButton", function (e) {
-        console.log("실행")
-        console.log($(this).parent().find(".edit-container"))
-
         let listContainer = $(this).parent()
         let editContainer = $(this).parent().parent().find(".edit-container")
 
@@ -20,21 +19,19 @@ $("document").ready(function () {
         e.preventDefault()
     })
 
+    // 단축 URL 수정 완료 이벤트
     $("#urlUl").on("click", ".saveButton", function (e) {
         editUrl($(this).data("id"), $(this).parent().parent().parent())
     })
 
-    // on을 통해 추가될 li에 이벤트 처리를 할 수 있음
+    // 단축 URL 삭제 이벤트
     $("#urlUl").on("click", ".deleteButton", function (e) {
         e.preventDefault()
         deleteUrl($(this).data("id"))
     })
 })
 
-function reload () {
-    getUrl()
-}
-
+// 단축 URL 목록 조회
 function getUrl() {
     $("#urlUl").empty()
 
@@ -42,8 +39,11 @@ function getUrl() {
         type: "GET",
         url: "/url",
         success: function (response) {
-            response.forEach(data => {
-                $("#urlUl").append(`
+            if (response === null) {
+                $("#urlUl").append("<li>등록된 URL이 없습니다.</li>")
+            } else {
+                response.forEach(data => {
+                    $("#urlUl").append(`
                     <li>
                         <div class="edit-container invisibility">
                             <form class="edit-form">  
@@ -51,7 +51,7 @@ function getUrl() {
                                 <input type="text" class="aliasUrl" value="${data.aliasUrl}" required>
                                 <label for="fullUrl">Full Url</label>
                                 <input type="url" class="fullUrl" value="${data.fullUrl}" required>
-                                <button type="button" class="saveButton" data-id='${data.id}'>save</button>
+                                <button type="button" class="saveButton" data-id='${data.id}'>Save</button>
                             </form>
                         </div>
                         
@@ -62,7 +62,8 @@ function getUrl() {
                         </div>
                         
                     </li>`)
-            })
+                })
+            }
         },
         error: function (jqXHR, textStatus, errorThrown) {
             console.log(jqXHR)
@@ -71,9 +72,8 @@ function getUrl() {
     });
 }
 
+// 단축 URL 등록
 function postUrl() {
-    console.log("postUrl")
-
     // 입력 데이터 가져오기
     let postData = {
         aliasUrl: $("#aliasUrl").val(),
@@ -85,9 +85,10 @@ function postUrl() {
         type: "POST",
         url: "/url",
         data: postData,
-        success: function(response) {
-            console.log("post success")
-            reload()
+        success: function (response) {
+            $("#aliasUrl").val('')
+            $("#fullUrl").val('')
+            getUrl()
         },
         error: function (jqXHR, textStatus, errorThrown) {
             console.log(jqXHR)
@@ -96,22 +97,21 @@ function postUrl() {
     });
 }
 
-function editUrl(id, listElement){
+// 단축 URL 수정
+function editUrl(id, listElement) {
     let editContainer = listElement.find(".edit-container")
     let data = JSON.stringify({
         aliasUrl: editContainer.find(".aliasUrl").val(),
         fullUrl: editContainer.find(".fullUrl").val()
     })
-    console.log(data)
 
     $.ajax({
         type: "PATCH",
         url: "url/" + id,
         contentType: "application/json",
         data: data,
-        success: function(response) {
-            console.log("edit success")
-            reload()
+        success: function () {
+            getUrl()
         },
         error: function (jqXHR, textStatus, errorThrown) {
             console.log(jqXHR)
@@ -120,13 +120,13 @@ function editUrl(id, listElement){
     });
 }
 
-function deleteUrl(id){
+// 단축 URL 삭제
+function deleteUrl(id) {
     $.ajax({
         type: "DELETE",
         url: "url/" + id,
-        success: function() {
-            console.log("delete success")
-            reload()
+        success: function () {
+            getUrl()
         },
         error: function (jqXHR, textStatus, errorThrown) {
             console.log(jqXHR)

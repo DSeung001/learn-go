@@ -9,7 +9,6 @@ import (
 	"shortUrl.com/db"
 	"shortUrl.com/model"
 	"shortUrl.com/utils"
-	"strings"
 )
 
 const (
@@ -21,8 +20,8 @@ func Setting() {
 	staticHandler := http.FileServer(http.Dir("." + PublicPath))
 	http.Handle(PublicPath+"/", http.StripPrefix(PublicPath, staticHandler))
 
-	// index
 	http.HandleFunc("/", indexHandler)
+	// url, url/1 같은 형식을 urlhandler로 처리
 	http.HandleFunc("/url", urlHandler)
 	http.HandleFunc("/url/", urlHandler)
 
@@ -30,6 +29,7 @@ func Setting() {
 	log.Fatal(http.ListenAndServe(fmt.Sprintf(":%d", Port), nil))
 }
 
+// indexHandler : /public/index.html을 보여줌
 func indexHandler(w http.ResponseWriter, r *http.Request) {
 	switch r.Method {
 	case "GET":
@@ -41,10 +41,9 @@ func indexHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func urlHandler(w http.ResponseWriter, r *http.Request) {
-	fmt.Println(r.Method)
 	switch r.Method {
 	case http.MethodGet:
-		getUrlHandler(w, r)
+		getUrlHandler(w)
 	case http.MethodPost:
 		postUrlHandler(w, r)
 	case http.MethodPatch:
@@ -56,18 +55,19 @@ func urlHandler(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func getUrlHandler(w http.ResponseWriter, r *http.Request) {
+// getUrlHandler : DB에 저장된 url 정보를 json 형식으로 반환
+func getUrlHandler(w http.ResponseWriter) {
 	// json 으로 변환
 	jsonUrls, err := json.Marshal(db.GetUrlList())
 	utils.HandleErr(err)
 
-	// http 성공 코드 및 json 데이터를 반환
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
 	_, err = w.Write(jsonUrls)
 	utils.HandleErr(err)
 }
 
+// postUrlHandler : DB에 url 정보를 저장
 func postUrlHandler(w http.ResponseWriter, r *http.Request) {
 	utils.HandleErr(r.ParseForm())
 	postData := r.PostForm
@@ -81,33 +81,24 @@ func postUrlHandler(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusOK)
 }
 
+// patchUrlHandler : DB에 저장된 url 정보를 업데이트
 func patchUrlHandler(w http.ResponseWriter, r *http.Request) {
+	var url model.Url
 	body, err := io.ReadAll(r.Body)
 	utils.HandleErr(err)
 
-	var url model.Url
+	// body가 json 형식으로 바꿀 수 있어서 json으로 바꾸고 이를 구조체에 디코딩 해서 저장
 	if err := json.Unmarshal(body, &url); err != nil {
 		http.Error(w, "Failed to decode JSON data", http.StatusBadRequest)
 		return
 	}
 
-	parts := strings.Split(r.URL.Path, "/")
-	if len(parts) < 3 {
-		http.Error(w, "Missing 'id' parameter", http.StatusBadRequest)
-		return
-	}
-	id := parts[2]
-	db.PatchUrl(url, id)
+	db.PatchUrl(url, utils.GetThirdIndexUrl(w, r))
 	w.WriteHeader(http.StatusOK)
 }
 
+// deleteUrlHandler : DB에 저장된 url 정보를 삭제
 func deleteUrlHandler(w http.ResponseWriter, r *http.Request) {
-	parts := strings.Split(r.URL.Path, "/")
-	if len(parts) < 3 {
-		http.Error(w, "Missing 'id' parameter", http.StatusBadRequest)
-		return
-	}
-	id := parts[2]
-	db.DeleteUrl(id)
+	db.DeleteUrl(utils.GetThirdIndexUrl(w, r))
 	w.WriteHeader(http.StatusOK)
 }

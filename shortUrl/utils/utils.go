@@ -4,6 +4,8 @@ package utils
 import (
 	"fmt"
 	"log"
+	"net/http"
+	"strings"
 )
 
 var logFn = log.Panic
@@ -13,5 +15,14 @@ func HandleErr(err error) {
 	if err != nil {
 		fmt.Println("err", err)
 		logFn(err)
+	}
+}
+
+func GetThirdIndexUrl(w http.ResponseWriter, r *http.Request) string {
+	parts := strings.Split(r.URL.Path, "/")
+	if len(parts) < 3 {
+		return ""
+	} else {
+		return parts[2]
 	}
 }
