@@ -18,6 +18,7 @@ func HandleErr(err error) {
 	}
 }
 
+// GetThirdIndexUrl : url의 세번째 인덱스 반환
 func GetThirdIndexUrl(r *http.Request) string {
 	parts := strings.Split(r.URL.Path, "/")
 	if len(parts) < 3 {

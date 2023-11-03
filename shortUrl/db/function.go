@@ -47,6 +47,7 @@ func GetUrlList() []model.Url {
 	return urls
 }
 
+// PatchUrl : DB에 저장된 url 정보를 업데이트
 func PatchUrl(url model.Url, id string) {
 	stmt, err := getDBConnection().Prepare("UPDATE url SET alias_url=?, full_url=? WHERE id=?")
 	utils.HandleErr(err)
@@ -60,10 +61,11 @@ func PatchUrl(url model.Url, id string) {
 	utils.HandleErr(err)
 }
 
+// DeleteUrl : DB에 저장된 url 정보를 삭제
 func DeleteUrl(id string) {
 	stmt, err := getDBConnection().Prepare("DELETE FROM url WHERE id=?")
 	utils.HandleErr(err)
-	
+
 	defer func(stmt *sql.Stmt) {
 		err := stmt.Close()
 		utils.HandleErr(err)

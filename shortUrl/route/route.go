@@ -16,7 +16,9 @@ const (
 	PublicPath = "/public"
 )
 
+// Route 세팅을
 func Setting() {
+	// 정적 파일 연결
 	staticHandler := http.FileServer(http.Dir("." + PublicPath))
 	http.Handle(PublicPath+"/", http.StripPrefix(PublicPath, staticHandler))
 
@@ -26,6 +28,7 @@ func Setting() {
 	http.HandleFunc("/url/", urlHandler)
 
 	log.Printf("Listening on localhost:%d", Port)
+	// 서버 실행
 	log.Fatal(http.ListenAndServe(fmt.Sprintf(":%d", Port), nil))
 }
 
@@ -40,6 +43,7 @@ func indexHandler(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+// REST API 요청 핸들러
 func urlHandler(w http.ResponseWriter, r *http.Request) {
 	switch r.Method {
 	case http.MethodGet:
