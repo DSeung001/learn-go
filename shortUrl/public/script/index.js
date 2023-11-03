@@ -50,7 +50,7 @@ function getUrl() {
                                 <label for="aliasUrl">Alias Url</label>
                                 <input type="text" class="aliasUrl" value="${data.aliasUrl}" required>
                                 <label for="fullUrl">Full Url</label>
-                                <input type="text" class="fullUrl" value="${data.fullUrl}" required>
+                                <input type="url" class="fullUrl" value="${data.fullUrl}" required>
                                 <button type="button" class="saveButton" data-id='${data.id}'>save</button>
                             </form>
                         </div>
