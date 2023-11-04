@@ -20,7 +20,7 @@ func inputIntValue() (int, error) {
 }
 
 func main() {
-	numbers := []int{}
+	var numbers []int
 	cnt := 0
 
 	// 시간을 기준으로 난수 생성
