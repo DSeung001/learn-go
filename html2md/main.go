@@ -5,32 +5,30 @@ import (
 	"os"
 
 	"github.com/gomarkdown/markdown"
-	"github.com/gomarkdown/markdown/ast"
 	"github.com/gomarkdown/markdown/html"
 	"github.com/gomarkdown/markdown/parser"
 
 	"fmt"
 )
 
-var printAst = false
-
 func mdToHTML(md []byte) []byte {
-	// create markdown parser with extensions
-	extensions := parser.CommonExtensions | parser.AutoHeadingIDs | parser.NoEmptyLineBeforeBlock
+	// Markdown Parser extensions : 마크다운 파서 설정
+	// CommonExtensions : 기본 설정
+	// AutoHeadingIDs : 제목에 자동으로 ID를 부여
+	extensions := parser.CommonExtensions | parser.AutoHeadingIDs
 	p := parser.NewWithExtensions(extensions)
+	// md 파일 읽기
 	doc := p.Parse(md)
 
-	if printAst {
-		fmt.Print("--- AST tree:\n")
-		ast.Print(os.Stdout, doc)
-		fmt.Print("\n")
-	}
-
-	// create HTML renderer with extensions
-	htmlFlags := html.CommonFlags | html.HrefTargetBlank
+	// Html Renderer flags : HTML 렌더링 설정
+	// CommonFlags : 기본 설정
+	// HrefTargetBlank : 링크를 새 탭에서 열기
+	// CompletePage : <html> 태그 추가
+	htmlFlags := html.CommonFlags | html.HrefTargetBlank | html.CompletePage
 	opts := html.RendererOptions{Flags: htmlFlags}
 	renderer := html.NewRenderer(opts)
 
+	// Convert markdown to HTML : 읽은 마크다운을 HTML로 변환
 	return markdown.Render(doc, renderer)
 }
 
