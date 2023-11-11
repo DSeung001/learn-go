@@ -7,7 +7,7 @@ import (
 )
 
 func main() {
-	PrintFile("hamlet.txt")
+	PrintFile("hamlet.txt.txt")
 }
 
 func PrintFile(filename string) {
