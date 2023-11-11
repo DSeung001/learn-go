@@ -3,6 +3,7 @@ package main
 import (
 	"bufio"
 	"fmt"
+	"io/fs"
 	"os"
 	"path/filepath"
 	"strings"
@@ -45,11 +46,29 @@ func main() {
 	}
 }
 
+// GetFileList : 경로에 매칭와 매칭되는 파일 이름을 가져옴
+func GetFileList(pattern string) ([]string, error) {
+	filelist := []string{}
+	err := filepath.Walk(".", func(path string, info fs.FileInfo, err error) error {
+		if !info.IsDir() {
+			matched, _ := filepath.Match(pattern, info.Name())
+			if matched {
+				filelist = append(filelist, path)
+			}
+		}
+		return nil
+	})
+	if err != nil {
+		return []string{}, err
+	}
+	return filelist, nil
+}
+
 // FindWordInAllFiles : 경로에 매칭되는 모든 파일에서 단어를 찾아서 반환
 func FindWordInAllFiles(word, path string) []FindInfo {
 	findInfos := []FindInfo{}
 
-	filelist, err := filepath.Glob(path)
+	filelist, err := GetFileList(path)
 	if err != nil {
 		fmt.Println("파일 경로가 잘못되었습니다. err:", err, "path:", path)
 		return findInfos
