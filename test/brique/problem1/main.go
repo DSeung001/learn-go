@@ -49,12 +49,9 @@ func readCsvFile(fileName string) *[][]string {
 
 func main() {
 	rows := readCsvFile("resource/sample.csv")
-	rowsLen := len(*rows)
 
 	var numbers [][]int
 	var strings [][]string
-
-	fmt.Println(rowsLen)
 
 	for _, row := range *rows {
 
@@ -79,6 +76,6 @@ func main() {
 	}
 
 	//fmt.Println(numbers)
-	// 뭔가 숫자만 있는 것도 걸린 느낌
+	// 왜 다른 값도 걸리지? => 한번 체크해보자
 	fmt.Println(strings)
 }
