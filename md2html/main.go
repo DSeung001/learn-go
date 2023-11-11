@@ -1,14 +1,25 @@
 package main
 
 import (
-	"md2html.com/utils"
-	"os"
-
+	"fmt"
 	"github.com/gomarkdown/markdown"
 	"github.com/gomarkdown/markdown/html"
 	"github.com/gomarkdown/markdown/parser"
+	"md2html.com/utils"
+	"os"
+	"path/filepath"
+	"strings"
+	"sync"
+)
 
-	"fmt"
+type file struct {
+	path string
+	name string
+}
+
+const (
+	resourcePath = "resource"
+	resultPath   = "result"
 )
 
 func mdToHTML(md []byte) []byte {
@@ -32,6 +43,7 @@ func mdToHTML(md []byte) []byte {
 	return markdown.Render(doc, renderer)
 }
 
+// file2Text : 파일을 읽어서 string 으로 반환
 func file2Text(filePath string) string {
 	data, err := os.ReadFile(filePath)
 	utils.ErrorHandler(err)
@@ -39,24 +51,99 @@ func file2Text(filePath string) string {
 	return content
 }
 
+// byte2html : []byte 로 HTML 파일 생성
 func byte2html(content []byte, filePath string) {
 	err := os.WriteFile(filePath, content, 0)
+	// 폴더 생성 코드 추가
 	utils.ErrorHandler(err)
 }
 
+// deleteFile : 파일 삭제
 func deleteFile(filePath string) {
 	_ = os.Remove(filePath)
 }
 
-func main() {
-	const (
-		resourcePath = "./resource/test.md"
-		resultPath   = "./result/test.html"
-	)
+// getFileList : 파라미터 경로에서 부터 md 파일을 추출
+func getMdFileList(root string) ([]file, error) {
+	fileList := []file{}
+	// root 경로에서 모든 파일 트리를 탐색하며 함수를 실행
+	err := filepath.Walk(root, func(path string, info os.FileInfo, err error) error {
+		// 해당 파일이 폴더가 아니고
+		if !info.IsDir() {
+			// md 확장자인 경우
+			mathed, _ := filepath.Match("*.md", filepath.Base(path))
+			if mathed {
+				fileList = append(fileList, file{path: path, name: info.Name()})
+			}
+		}
+		return nil
+	})
+	if err != nil {
+		return []file{}, err
+	}
+	return fileList, nil
+}
 
-	md := []byte(file2Text(resourcePath))
+// replaceFromEnd : 뒤에서 부터 old 를 찾아 new 로 변경
+func replaceFromEnd(input, old, new string) string {
+	lastIndex := strings.LastIndex(input, old)
+	if lastIndex == -1 {
+		return input
+	}
+	return input[:lastIndex] + new
+}
+
+// createFolderIfNotExists : 폴더가 존재하지 않으면 생성
+func createFolderIfNotExists(path string) error {
+	_, err := os.Stat(path)
+	if os.IsNotExist(err) {
+		// 0777 : 모든 권한 부여으로 파일 생성
+		// MkdirAll : 재귀함수로 부족한 모든 폴더 생섵
+		err := os.MkdirAll(path, os.ModePerm)
+		return err
+	}
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func md2html(resourceFile file) error {
+	md := []byte(file2Text(resourceFile.path))
 	htmlBytes := mdToHTML(md)
-	deleteFile(resultPath)
-	byte2html(htmlBytes, resultPath)
+
+	resultFileName := strings.Replace(replaceFromEnd(resourceFile.path, resourceFile.name, ""), resourcePath, resultPath, 1) + replaceFromEnd(resourceFile.name, "md", "html")
+	// resultFileName 경로로 폴더가 없을 경우 생성
+	err := createFolderIfNotExists(resultFileName)
+	if err != nil {
+		return err
+	}
+
+	deleteFile(resultFileName)
+	byte2html(htmlBytes, resultFileName)
+	return nil
+}
+
+func main() {
+
+	resourcePathList, err := getMdFileList(resourcePath)
+	utils.ErrorHandler(err)
+
+	wg := sync.WaitGroup{}
+	wg.Add(len(resourcePathList))
+
+	for _, resourceFile := range resourcePathList {
+		// 루프 캡처로 인해 복사본 생성
+		resourceFile := resourceFile
+		go func() {
+			err := md2html(resourceFile)
+			utils.ErrorHandler(err)
+			wg.Done()
+		}()
+	}
+
+	wg.Wait()
 	fmt.Printf("Markdown to HTML")
+
 }
