@@ -109,6 +109,7 @@ func createFolderIfNotExists(path string) error {
 	return nil
 }
 
+// md2html : md 파일을 읽어서 HTML 파일로 변환
 func md2html(resourceFile file) error {
 	md := []byte(file2Text(resourceFile.path))
 	htmlBytes := mdToHTML(md)
@@ -126,10 +127,11 @@ func md2html(resourceFile file) error {
 }
 
 func main() {
-
+	// 해당 경로에서 md 파일 목록을 가져옵니다
 	resourcePathList, err := getMdFileList(resourcePath)
 	utils.ErrorHandler(err)
 
+	// goroutine 을 기다리기 위해 WaitGroup 생성
 	wg := sync.WaitGroup{}
 	wg.Add(len(resourcePathList))
 
@@ -137,13 +139,14 @@ func main() {
 		// 루프 캡처(반복문의 마지막 값으로 go가 실행됨)로 인해 복사본 생성
 		resourceFile := resourceFile
 		go func() {
+			// md 파일을 읽어서 HTML 파일로 변환하는 로직
 			err := md2html(resourceFile)
 			utils.ErrorHandler(err)
 			wg.Done()
 		}()
 	}
 
+	// goroutine 기다리기
 	wg.Wait()
 	fmt.Printf("Markdown to HTML")
-
 }
