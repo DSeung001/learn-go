@@ -1,43 +1,33 @@
-<!DOCTYPE html>
-<html>
-<head>
-  <title></title>
-  <meta name="GENERATOR" content="github.com/gomarkdown/markdown markdown processor for Go">
-  <meta charset="utf-8">
-</head>
-<body>
+# Markdown Editor 3
 
-<h1 id="markdown-editor">Markdown Editor</h1>
+Markdown is a lightweight markup language with plain text formatting syntax.
 
-<p>Markdown is a lightweight markup language with plain text formatting syntax.</p>
+## Features
 
-<h2 id="features">Features</h2>
+- Tables
+- Fenced code blocks
+- Drag and drop markdown files
+- Even More
 
-<ul>
-<li>Tables</li>
-<li>Fenced code blocks</li>
-<li>Drag and drop markdown files</li>
-<li>Even More</li>
-</ul>
 
-<h2 id="code-highlighting">Code Highlighting</h2>
 
-<pre><code class="language-javascript">const CHANCE = Math.random() &gt; 0.5 ? true : false; 
+## Code Highlighting
+
+```javascript 
+const CHANCE = Math.random() > 0.5 ? true : false; 
 if (CHANCE === true) { 
 console.log('It`s true'); 
 } 
 if (CHANCE === false) { 
 console.log('It's false'); 
 } 
-</code></pre>
+``` 
 
-<h2 id="images">Images</h2>
+## Images
 
-<p><img src="https://i.ytimg.com/vi/esBYZjbz1zw/maxresdefault.jpg" alt="alt text" title="Ken Block rip" /></p>
+![alt text](https://i.ytimg.com/vi/esBYZjbz1zw/maxresdefault.jpg  'Ken Block rip')
 
-<h2 id="donate">Donate</h2>
+## Donate
 
-<p>If you like this extension, please consider donating to support the development of this extension.</p>
+If you like this extension, please consider donating to support the development of this extension. 
 
-</body>
-</html>

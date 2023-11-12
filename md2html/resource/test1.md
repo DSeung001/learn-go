@@ -1,4 +1,4 @@
-# Markdown Editor 2
+# Markdown Editor 1
 
 Markdown is a lightweight markup language with plain text formatting syntax.
 

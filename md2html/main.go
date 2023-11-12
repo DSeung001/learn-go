@@ -134,7 +134,7 @@ func main() {
 	wg.Add(len(resourcePathList))
 
 	for _, resourceFile := range resourcePathList {
-		// 루프 캡처로 인해 복사본 생성
+		// 루프 캡처(반복문의 마지막 값으로 go가 실행됨)로 인해 복사본 생성
 		resourceFile := resourceFile
 		go func() {
 			err := md2html(resourceFile)
