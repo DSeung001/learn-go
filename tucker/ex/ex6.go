@@ -12,12 +12,13 @@ var wg sync.WaitGroup
 func main() {
 	wg.Add(1)
 
-	ctx, cancel := context.WithCancel(context.Background())
+	// 컨텍스트 랩핑
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	ctx = context.WithValue(ctx, "hello", "world")
+
 	go printTick(ctx)
-	time.Sleep(5 * time.Second)
 
-	cancel() // cancel을 실행함으로써 ctx에 done 신호가 들어감
-
+	defer cancel()
 	wg.Wait()
 }
 
@@ -31,7 +32,7 @@ func printTick(ctx context.Context) {
 			wg.Done() // waitGroup을 종료
 			return
 		case <-tick:
-			fmt.Println("tick")
+			fmt.Println(ctx.Value("hello"), "tick")
 		}
 	}
 }
