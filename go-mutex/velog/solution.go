@@ -7,6 +7,8 @@ import (
 	"time"
 )
 
+// 출처 : https://velog.io/@supssson/Go-Mutex%EB%8A%94-%EC%96%B4%EB%96%BB%EA%B2%8C-%EB%8F%99%EC%9E%91%ED%95%A0%EA%B9%8C
+
 // Solution1 : 고루틴 동기성 문제 1번 임의의 값 사용
 func Solution1() {
 	var lock int = 1
