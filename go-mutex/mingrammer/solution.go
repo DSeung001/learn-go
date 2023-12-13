@@ -8,6 +8,7 @@ import (
 	"time"
 )
 
+// 출처 : https://mingrammer.com/gobyexample/mutexes/
 func Solution() {
 	var state = make(map[int]int)
 	var mutex = &sync.Mutex{}
