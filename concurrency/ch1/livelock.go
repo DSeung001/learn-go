@@ -11,26 +11,33 @@ import (
 func LiveLock() {
 	fmt.Println("Livelock Start")
 
+	// 조건 변수 생성, 뮤텍스와 함께 사용
+	// 뮤텍스 : 공유 자원에 대한 접근을 제어하는 동기화 기법으로 하나의 고루틴만 접근 가능하게 함
 	cadence := sync.NewCond(&sync.Mutex{})
+
 	go func() {
+		// 1 밀리초마다 cadence broadcast => wait를 깨움
 		for range time.Tick(1 * time.Millisecond) {
 			cadence.Broadcast()
 		}
 	}()
 
-	// 모든 참가자가 일정한 보조로 움직임을 나타냄 => 라이브락을 구현하기 위해
+	// cadence lock
 	takeStep := func() {
 		cadence.L.Lock()
+		// cadence wait는 cadence broadcast가 호출될 때까지 대기
 		cadence.Wait()
 		cadence.L.Unlock()
 	}
 
 	// 어떤 사람이 특정 방향으로 움직이도록 시도하는 함수로 성공 여부를 반환
-	tryDir := func(dirName string, dir *int32, out *bytes.Buffer) bool {
-		fmt.Fprintf(out, " %v", dirName)
+	process := func(dirName string, dir *int32, out *bytes.Buffer) bool {
+		fmt.Fprintf(out, "%v ", dirName)
 		// 방향 값을 1증가 => atomic 패키지는 함수들의 연산이 원자적이다
 		atomic.AddInt32(dir, 1)
+		// 1밀리세컨드 기다리기
 		takeStep()
+		// atomic 연산을 했지만 2번 실행되기 때문에 진전을 못함
 		if atomic.LoadInt32(dir) == 1 {
 			fmt.Fprint(out, ". Success!")
 			return true
@@ -41,34 +48,32 @@ func LiveLock() {
 		return false
 	}
 
-	var left, right int32
-	tryLeft := func(out *bytes.Buffer) bool {
-		return tryDir("left", &left, out)
-	}
-	tryRight := func(out *bytes.Buffer) bool {
-		return tryDir("right", &right, out)
-	}
+	var resource int32
 
-	walk := func(walking *sync.WaitGroup, name string) {
+	start := func(wg *sync.WaitGroup, processName string) {
+		// 결과 값을 저장할 변수
 		var out bytes.Buffer
+
 		defer func() {
 			fmt.Println(out.String())
+			wg.Done()
 		}()
-		defer walking.Done()
-		fmt.Fprintf(&out, "%v is trying to scoot:", name)
+
+		// 반복문에 제한을 둠 => 안그러면 계속 돔
 		for i := 0; i < 5; i++ {
-			if tryLeft(&out) || tryRight(&out) {
+			if process("loading", &resource, &out) {
+				fmt.Fprintf(&out, "Process %v는 정상 실행되었습니다!.", processName)
 				return
 			}
 		}
-		fmt.Fprintf(&out, "\n%v tosses her hands up in exasperation!", name)
+		fmt.Fprintf(&out, "Process %v에 라이브락이 발생했습니다!.", processName)
 	}
 
-	var peopleInHallway sync.WaitGroup
-	peopleInHallway.Add(2)
-	go walk(&peopleInHallway, "Alice")
-	go walk(&peopleInHallway, "Barbara")
-	peopleInHallway.Wait()
+	var wg sync.WaitGroup
+	wg.Add(2)
+	go start(&wg, "A")
+	go start(&wg, "B")
+	wg.Wait()
 
 	fmt.Println("Livelock End")
 }

@@ -8,26 +8,35 @@ import (
 
 func Deadlock() {
 	type value struct {
-		mu    sync.Mutex
-		value int
+		mu       sync.Mutex
+		resource int
 	}
 
 	var wg sync.WaitGroup
-	printSum := func(v1, v2 *value) {
-		defer wg.Done()
+	process := func(v1, v2 *value) {
+		defer func() {
+			wg.Done()
+			v1.mu.Unlock()
+			v2.mu.Unlock()
+		}()
 		v1.mu.Lock()
-		defer v1.mu.Unlock()
 
+		// 원할한 테스트를 위해 2초 대기
 		time.Sleep(2 * time.Second)
 		v2.mu.Lock()
-		defer v2.mu.Unlock()
 
-		fmt.Println("sum=", v1.value+v2.value)
+		fmt.Println("sum=", v1.resource+v2.resource)
 	}
 
-	var a, b value
-	wg.Add(2)
-	go printSum(&a, &b)
-	go printSum(&b, &a)
+	var a, b, c value
+	wg.Add(3)
+
+	// Process A 실행
+	go process(&a, &c)
+	// Process B 실행
+	go process(&b, &a)
+	// Process C 실행
+	go process(&c, &b)
+
 	wg.Wait()
 }
