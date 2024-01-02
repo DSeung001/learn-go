@@ -37,7 +37,7 @@ func LiveLock() {
 		atomic.AddInt32(dir, 1)
 		// 1밀리세컨드 기다리기
 		takeStep()
-		// atomic 연산을 했지만 2번 실행되기 때문에 진전을 못함
+		// atomic 연산을 했지만 고루틴으로 2번 실행되기 때문에 진전을 못함
 		if atomic.LoadInt32(dir) == 1 {
 			fmt.Fprint(out, ". Success!")
 			return true
