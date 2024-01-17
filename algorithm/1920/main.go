@@ -13,35 +13,36 @@ func main() {
 	defer writer.Flush()
 
 	var n int
-	// Fscanln은 줄 바꿈이 있으면 종료
-	fmt.Fscanln(reader, &n)
+	var m int
 
+	// 배열 길이 및 데이터 입력
+	fmt.Fscanln(reader, &n)
 	arr := make([]int, n)
 	for i := 0; i < n; i++ {
-		// Fscan은 공백이 있으면 종료
 		fmt.Fscan(reader, &arr[i])
 	}
 	fmt.Fscanln(reader)
-
 	sort.Ints(arr)
-
-	var m int
 	fmt.Fscanln(reader, &m)
-
 	for i := 0; i < m; i++ {
 		var elem int
 		fmt.Fscan(reader, &elem)
+		fmt.Println(binarySearch(arr, elem))
 
-		// Search로 2진 탐색으로 시간 단축
-		idx := sort.Search(len(arr), func(i int) bool {
-			return arr[i] >= elem
-		})
+	}
+}
 
-		result := idx < n && arr[idx] == elem
-		if result {
-			fmt.Fprintln(writer, 1)
+func binarySearch(arr []int, elem int) int {
+	start, end := 0, len(arr)-1
+	for start <= end {
+		mid := (end + start) / 2
+		if arr[mid] > elem {
+			end = mid - 1
+		} else if arr[mid] < elem {
+			start = mid + 1
 		} else {
-			fmt.Fprintln(writer, 0)
+			return 1
 		}
 	}
+	return 0
 }
