@@ -1,8 +1,7 @@
 package main
 
 import (
-	"fmt"
-	"sync"
+	"concurrency.com/ch3/mutex"
 )
 
 func main() {
@@ -14,13 +13,6 @@ func main() {
 
 	//ch3.MemConsumed()
 
-	var wg sync.WaitGroup
-	for _, text := range []string{"a", "b", "c"} {
-		wg.Add(1)
-		go func(text string) {
-			defer wg.Done()
-			fmt.Println(text)
-		}(text)
-	}
-	wg.Wait()
+	//mutex.Ex1()
+	mutex.Ex2()
 }
