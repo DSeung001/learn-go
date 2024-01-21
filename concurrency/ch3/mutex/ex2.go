@@ -16,6 +16,7 @@ func Ex2() {
 		for i := 5; i > 0; i-- {
 			l.Lock()
 			l.Unlock()
+			time.Sleep(1)
 		}
 	}
 
@@ -44,7 +45,7 @@ func Ex2() {
 
 	var m sync.RWMutex
 	fmt.Fprintf(tw, "Readers\tRWMutext\tMutex\n")
-	for i := 0; i < 22; i++ {
+	for i := 0; i < 20; i++ {
 		// x를 y의 거듭제곱으로 계산하기 위한 값
 		count := int(math.Pow(2, float64(i)))
 		fmt.Fprintf(
