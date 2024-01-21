@@ -8,6 +8,36 @@ import (
 	"strings"
 )
 
+/*
+	입력
+10
+ABCD
+ABCDD
+ABC
+DCBAA
+DCB
+AAAAA
+BBBBB
+AABBCCDD
+AABCDD
+A
+답 : 4
+
+3
+AAACD
+AAAAD
+DCAAAA
+
+	=> AAAACD
+답 2
+
+아래 비교
+CD
+ACD
+
+결론 : 정렬 기능도 아닌가?
+*/
+
 func main() {
 	reader := bufio.NewReader(os.Stdin)
 	var num int
@@ -28,6 +58,9 @@ func main() {
 }
 
 func isLike(origin, compare string) bool {
+	if len(origin)-len(compare) > 1 || len(compare)-len(origin) > 1 {
+		return false
+	}
 	longSlice := []rune(origin)
 	shortSlice := []rune(compare)
 
@@ -55,11 +88,10 @@ func isLike(origin, compare string) bool {
 			}
 		} else {
 			if longSlice[i] != shortSlice[j] {
-				check++
-			} else {
 				tmp = append(tmp, shortSlice[j])
-				j++
+				check++
 			}
+			j++
 			if check > 1 {
 				return false
 			}
