@@ -1,28 +1,23 @@
 package _chan
 
 import (
-	"bytes"
 	"fmt"
-	"os"
 )
 
 func Ex1() {
-	var stdoutBuff bytes.Buffer
-	defer stdoutBuff.WriteTo(os.Stdout)
-
-	intStream := make(chan int, 4)
+	intStream := make(chan int, 2)
 	go func() {
 		defer close(intStream)
-		defer fmt.Fprintf(&stdoutBuff, "Producer Done.\n")
+		defer fmt.Println("Producer Done.")
 		// i 값을 미루면 버퍼링 되므로 Producer이 늦게 출력
 		for i := 0; i < 5; i++ {
-			fmt.Fprintf(&stdoutBuff, "Sending: %d\n", i)
+			fmt.Println("Sending:", i)
 			intStream <- i
 		}
 	}()
 
 	for integer := range intStream {
-		fmt.Fprintf(&stdoutBuff, "Received %v.\n", integer)
+		fmt.Printf("Received: %v.\n", integer)
 	}
 }
 

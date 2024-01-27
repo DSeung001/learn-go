@@ -19,6 +19,6 @@ func main() {
 
 	//pool.Ex1()
 
-	//_chan.Ex1()
-	_chan.Ex2()
+	_chan.Ex1()
+	//_chan.Ex2()
 }
