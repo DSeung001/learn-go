@@ -1,6 +1,6 @@
 package main
 
-import "concurrency.com/ch3/pool"
+import _chan "concurrency.com/ch3/chan"
 
 func main() {
 	//ch1.Deadlock()
@@ -17,5 +17,8 @@ func main() {
 	//cond.Ex1()
 	//cond.Ex2()
 
-	pool.Ex1()
+	//pool.Ex1()
+
+	//_chan.Ex1()
+	_chan.Ex2()
 }
