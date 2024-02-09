@@ -36,7 +36,7 @@ func main() {
 		}
 	}
 
-	// 큐가 빌때 까지 정렬)
+	// 큐가 빌때 까지 정렬
 	for len(queue) > 0 {
 		// 큐에서 값을 꺼냄
 		current := queue[0]
