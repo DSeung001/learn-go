@@ -9,7 +9,7 @@ gqlgen init => go run github.com/99designs/gqlgen init
 생기는 폴더 & 파일들
 - gqlgen.yml: gqlgen 설정 파일입니다.
 - graph/schema.graphqls: GraphQL 스키마 정의를 위한 파일입니다.
-- graph/generated/generated.go: gqlgen에 의해 자동 생성된 Go 코드입니다.
+- graph/generated.go: gqlgen에 의해 자동 생성된 Go 코드입니다.
 - graph/model/models_gen.go: 스키마에서 정의된 타입을 위한 Go 모델입니다.
 - graph/resolver.go: 필드 리졸버를 구현하기 위한 기본 파일입니다.
 - server.go: GraphQL 서버를 시작하는 기본 Go 파일입니다.
