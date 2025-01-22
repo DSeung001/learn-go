@@ -4,12 +4,9 @@ import (
 	"fmt"
 	"text-game.com/battle"
 	"text-game.com/factory"
-	"text-game.com/utils"
 )
 
 func main() {
-	utils.InitRandomSeed()
-
 	// 캐릭터 생성
 	warriorFactory := factory.WarriorLevel1Factory{}
 	wizardFactory := factory.WizardLevel1Factory{}

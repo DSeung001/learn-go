@@ -2,9 +2,12 @@ package utils
 
 import (
 	"math/rand"
-	"time"
 )
 
-func InitRandomSeed() {
-	rand.Seed(time.Now().UnixNano())
+// 랜덤 범위 계산 함수
+func GetRandomValue(max int) int {
+	if max <= 0 {
+		return 0
+	}
+	return rand.Intn(max) + 1
 }

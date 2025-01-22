@@ -6,6 +6,7 @@ import "text-game.com/character"
 type ClassLevelFactory interface {
 	CreateFeature() character.Feature
 	CreateAbility() character.Ability
+	CreateBaseStats() (hp int, attack int, defense int)
 }
 
 // WarriorLevel1Factory 구현체
@@ -19,6 +20,10 @@ func (w WarriorLevel1Factory) CreateAbility() character.Ability {
 	return character.SecondWind{}
 }
 
+func (w WarriorLevel1Factory) CreateBaseStats() (hp int, attack int, defense int) {
+	return 50, 12, 9
+}
+
 // WizardLevel1Factory 구현체
 type WizardLevel1Factory struct{}
 
@@ -28,4 +33,8 @@ func (w WizardLevel1Factory) CreateFeature() character.Feature {
 
 func (w WizardLevel1Factory) CreateAbility() character.Ability {
 	return character.Fireball{}
+}
+
+func (w WizardLevel1Factory) CreateBaseStats() (hp int, attack int, defense int) {
+	return 35, 17, 5
 }
