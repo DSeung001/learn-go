@@ -2,13 +2,12 @@ package pokemon
 
 import "pokemon.com/models"
 
-type SnorlaxFactory struct {
-	BaseStats map[string]int
-}
+type SnorlaxFactory struct{}
 
 func (s *SnorlaxFactory) NewPokemon(level int) models.Pokemon {
 	var name, evolution, preEvolution string
 	var moves []models.Move
+	var stats = models.Stats{}
 
 	name = "잠만보"
 	evolution = ""
@@ -20,13 +19,20 @@ func (s *SnorlaxFactory) NewPokemon(level int) models.Pokemon {
 		{Name: "하이퍼빔", Damage: 150, PP: 5, Type: "노말"},
 	}
 
+	stats.Hp = 160
+	stats.Attack = 110
+	stats.Defense = 65
+	stats.SpAtk = 65
+	stats.SpDef = 110
+	stats.Speed = 30
+
 	return models.Pokemon{
 		Level:        level,
 		Name:         name,
 		Type:         "노말",
 		Evolution:    evolution,
 		PreEvolution: preEvolution,
-		Stats:        s.BaseStats,
+		Stats:        stats,
 		Moves:        moves,
 	}
 }

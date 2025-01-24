@@ -2,13 +2,12 @@ package pokemon
 
 import "pokemon.com/models"
 
-type SquirtleFactory struct {
-	BaseStats map[string]int
-}
+type SquirtleFactory struct{}
 
 func (w *SquirtleFactory) NewPokemon(level int) models.Pokemon {
 	var name, evolution, preEvolution string
 	var moves []models.Move
+	var stats = models.Stats{}
 
 	switch {
 	case level < 16:
@@ -21,6 +20,12 @@ func (w *SquirtleFactory) NewPokemon(level int) models.Pokemon {
 			{Name: "껍질에 숨기", Damage: 0, PP: 40, Type: "물"},
 			{Name: "거품", Damage: 40, PP: 30, Type: "물"},
 		}
+		stats.Hp = 44
+		stats.Attack = 48
+		stats.Defense = 65
+		stats.SpAtk = 50
+		stats.SpDef = 64
+		stats.Speed = 43
 	case level < 36:
 		name = "어니부기"
 		evolution = "거북왕"
@@ -31,6 +36,12 @@ func (w *SquirtleFactory) NewPokemon(level int) models.Pokemon {
 			{Name: "아쿠아테일", Damage: 90, PP: 10, Type: "물"},
 			{Name: "방어", Damage: 0, PP: 10, Type: "노말"},
 		}
+		stats.Hp = 59
+		stats.Attack = 63
+		stats.Defense = 80
+		stats.SpAtk = 65
+		stats.SpDef = 80
+		stats.Speed = 58
 	default:
 		name = "거북왕"
 		evolution = ""
@@ -41,6 +52,12 @@ func (w *SquirtleFactory) NewPokemon(level int) models.Pokemon {
 			{Name: "냉동빔", Damage: 90, PP: 10, Type: "얼음"},
 			{Name: "서핑", Damage: 90, PP: 15, Type: "물"},
 		}
+		stats.Hp = 79
+		stats.Attack = 83
+		stats.Defense = 100
+		stats.SpAtk = 85
+		stats.SpDef = 105
+		stats.Speed = 78
 	}
 
 	return models.Pokemon{
@@ -49,7 +66,7 @@ func (w *SquirtleFactory) NewPokemon(level int) models.Pokemon {
 		Type:         "물",
 		Evolution:    evolution,
 		PreEvolution: preEvolution,
-		Stats:        w.BaseStats,
+		Stats:        stats,
 		Moves:        moves,
 	}
 }

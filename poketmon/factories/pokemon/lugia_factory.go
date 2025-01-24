@@ -2,13 +2,12 @@ package pokemon
 
 import "pokemon.com/models"
 
-type LugiaFactory struct {
-	BaseStats map[string]int
-}
+type LugiaFactory struct{}
 
 func (l *LugiaFactory) NewPokemon(level int) models.Pokemon {
 	var name, evolution, preEvolution string
 	var moves []models.Move
+	var stats = models.Stats{}
 
 	name = "루기아"
 	evolution = ""
@@ -20,13 +19,20 @@ func (l *LugiaFactory) NewPokemon(level int) models.Pokemon {
 		{Name: "리플렉터", Damage: 0, PP: 20, Type: "에스퍼"},
 	}
 
+	stats.Hp = 106
+	stats.Attack = 90
+	stats.Defense = 130
+	stats.SpAtk = 90
+	stats.SpDef = 154
+	stats.Speed = 110
+
 	return models.Pokemon{
 		Level:        level,
 		Name:         name,
 		Type:         "에스퍼",
 		Evolution:    evolution,
 		PreEvolution: preEvolution,
-		Stats:        l.BaseStats,
+		Stats:        stats,
 		Moves:        moves,
 	}
 }

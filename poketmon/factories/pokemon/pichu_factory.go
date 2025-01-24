@@ -2,13 +2,12 @@ package pokemon
 
 import "pokemon.com/models"
 
-type PichuFactory struct {
-	BaseStats map[string]int
-}
+type PichuFactory struct{}
 
 func (e *PichuFactory) NewPokemon(level int) models.Pokemon {
 	var name, evolution, preEvolution string
 	var moves []models.Move
+	var stats = models.Stats{}
 
 	switch {
 	case level < 15:
@@ -21,6 +20,12 @@ func (e *PichuFactory) NewPokemon(level int) models.Pokemon {
 			{Name: "달콤한 키스", Damage: 0, PP: 10, Type: "페어리"},
 			{Name: "볼트태클", Damage: 20, PP: 20, Type: "전기"},
 		}
+		stats.Hp = 20
+		stats.Attack = 40
+		stats.Defense = 15
+		stats.SpAtk = 35
+		stats.SpDef = 35
+		stats.Speed = 60
 	case level < 30:
 		name = "피카츄"
 		evolution = "라이츄"
@@ -31,6 +36,12 @@ func (e *PichuFactory) NewPokemon(level int) models.Pokemon {
 			{Name: "전기 볼", Damage: 60, PP: 10, Type: "전기"},
 			{Name: "속임수", Damage: 30, PP: 10, Type: "노말"},
 		}
+		stats.Hp = 35
+		stats.Attack = 55
+		stats.Defense = 40
+		stats.SpAtk = 50
+		stats.SpDef = 50
+		stats.Speed = 90
 	default:
 		name = "라이츄"
 		evolution = ""
@@ -41,6 +52,12 @@ func (e *PichuFactory) NewPokemon(level int) models.Pokemon {
 			{Name: "아이언 테일", Damage: 100, PP: 15, Type: "강철"},
 			{Name: "방전", Damage: 80, PP: 15, Type: "전기"},
 		}
+		stats.Hp = 60
+		stats.Attack = 90
+		stats.Defense = 55
+		stats.SpAtk = 90
+		stats.SpDef = 80
+		stats.Speed = 110
 	}
 
 	return models.Pokemon{
@@ -49,7 +66,7 @@ func (e *PichuFactory) NewPokemon(level int) models.Pokemon {
 		Type:         "전기",
 		Evolution:    evolution,
 		PreEvolution: preEvolution,
-		Stats:        e.BaseStats,
+		Stats:        stats,
 		Moves:        moves,
 	}
 }

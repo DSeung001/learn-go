@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"math/rand"
 	"os"
+	"pokemon.com/battles"
 	"pokemon.com/factories"
 	"pokemon.com/models"
 	"strings"
@@ -35,6 +36,8 @@ func main() {
 
 	trainer.PrintPokemons()
 	rival.PrintPokemons()
+
+	battles.BattleTrainers(trainer, rival)
 }
 
 func CatchAllEntryPokemon(pokemonResitry *factories.PokemonFactoryRegistry, trainer *models.Trainer) {

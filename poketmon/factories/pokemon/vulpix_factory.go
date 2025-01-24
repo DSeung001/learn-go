@@ -2,13 +2,12 @@ package pokemon
 
 import "pokemon.com/models"
 
-type VulpixFactory struct {
-	BaseStats map[string]int
-}
+type VulpixFactory struct{}
 
 func (v *VulpixFactory) NewPokemon(level int) models.Pokemon {
 	var name, evolution, preEvolution string
 	var moves []models.Move
+	var stats = models.Stats{}
 
 	switch {
 	case level < 25:
@@ -21,6 +20,12 @@ func (v *VulpixFactory) NewPokemon(level int) models.Pokemon {
 			{Name: "용해액", Damage: 40, PP: 30, Type: "독"},
 			{Name: "윌오위스프", Damage: 0, PP: 15, Type: "불꽃"},
 		}
+		stats.Hp = 38
+		stats.Attack = 41
+		stats.Defense = 40
+		stats.SpAtk = 50
+		stats.SpDef = 65
+		stats.Speed = 65
 	default:
 		name = "나인테일"
 		evolution = ""
@@ -31,6 +36,12 @@ func (v *VulpixFactory) NewPokemon(level int) models.Pokemon {
 			{Name: "냉동빔", Damage: 90, PP: 10, Type: "얼음"},
 			{Name: "명상", Damage: 0, PP: 20, Type: "에스퍼"},
 		}
+		stats.Hp = 73
+		stats.Attack = 76
+		stats.Defense = 75
+		stats.SpAtk = 81
+		stats.SpDef = 100
+		stats.Speed = 100
 	}
 
 	return models.Pokemon{
@@ -39,7 +50,7 @@ func (v *VulpixFactory) NewPokemon(level int) models.Pokemon {
 		Type:         "불꽃",
 		Evolution:    evolution,
 		PreEvolution: preEvolution,
-		Stats:        v.BaseStats,
+		Stats:        stats,
 		Moves:        moves,
 	}
 }

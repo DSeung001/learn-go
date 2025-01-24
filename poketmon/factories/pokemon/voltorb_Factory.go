@@ -2,13 +2,12 @@ package pokemon
 
 import "pokemon.com/models"
 
-type VoltorbFactory struct {
-	BaseStats map[string]int
-}
+type VoltorbFactory struct{}
 
 func (v *VoltorbFactory) NewPokemon(level int) models.Pokemon {
 	var name, evolution, preEvolution string
 	var moves []models.Move
+	var stats = models.Stats{}
 
 	switch {
 	case level < 30:
@@ -21,6 +20,12 @@ func (v *VoltorbFactory) NewPokemon(level int) models.Pokemon {
 			{Name: "라이트스크린", Damage: 0, PP: 20, Type: "에스퍼"},
 			{Name: "자폭", Damage: 200, PP: 5, Type: "노말"},
 		}
+		stats.Hp = 40
+		stats.Attack = 30
+		stats.Defense = 50
+		stats.SpAtk = 55
+		stats.SpDef = 55
+		stats.Speed = 100
 	default:
 		name = "붐볼"
 		evolution = ""
@@ -31,6 +36,12 @@ func (v *VoltorbFactory) NewPokemon(level int) models.Pokemon {
 			{Name: "스위프트", Damage: 60, PP: 20, Type: "노말"},
 			{Name: "자폭", Damage: 200, PP: 5, Type: "노말"},
 		}
+		stats.Hp = 60
+		stats.Attack = 50
+		stats.Defense = 70
+		stats.SpAtk = 80
+		stats.SpDef = 80
+		stats.Speed = 150
 	}
 
 	return models.Pokemon{
@@ -39,7 +50,7 @@ func (v *VoltorbFactory) NewPokemon(level int) models.Pokemon {
 		Type:         "전기",
 		Evolution:    evolution,
 		PreEvolution: preEvolution,
-		Stats:        v.BaseStats,
+		Stats:        stats,
 		Moves:        moves,
 	}
 }

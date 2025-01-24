@@ -1,12 +1,23 @@
 package models
 
-// Pokemon represents the attributes of a Pokemon.
 type Pokemon struct {
 	Level        int
 	Name         string
 	Type         string
 	Evolution    string
 	PreEvolution string
-	Stats        map[string]int
+	Stats        Stats
 	Moves        []Move
+	Live         bool
+	Trainer      string
+}
+
+type Stats struct {
+	CurrentHp int
+	Hp        int
+	Attack    int
+	Defense   int
+	SpAtk     int
+	SpDef     int
+	Speed     int
 }
