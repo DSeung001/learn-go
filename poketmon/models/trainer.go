@@ -13,7 +13,7 @@ type Trainer struct {
 }
 
 func (t *Trainer) CatchPokemon(pokemon Pokemon) {
-	if len(t.Pokemons) <= MaxEntryCount {
+	if len(t.Pokemons) < MaxEntryCount {
 		pokemon.Trainer = t.Name
 		t.Pokemons = append(t.Pokemons, pokemon)
 	}

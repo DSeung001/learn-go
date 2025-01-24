@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"math/rand"
 	"pokemon.com/models"
+	"time"
 )
 
 // BattlePokemon handles a battle between two Pokemon
@@ -20,10 +21,7 @@ func BattlePokemon(pokemon1, pokemon2 *models.Pokemon) string {
 		}
 
 		// First Pokemon attacks
-		damage := first.Stats.Attack*(first.Level/50+1) - second.Stats.Defense*(second.Level/50+1) + rand.Intn(10)
-		if damage < 0 {
-			damage = 1 // Minimum damage is 1
-		}
+		damage := calculateDamage(first, second)
 		second.Stats.Hp -= damage
 		fmt.Printf("%s attacks %s for %d damage! (%s HP: %d)\n",
 			first.Name, second.Name, damage, second.Name, second.Stats.Hp)
@@ -34,10 +32,7 @@ func BattlePokemon(pokemon1, pokemon2 *models.Pokemon) string {
 		}
 
 		// Second Pokemon attacks
-		damage = second.Stats.Attack*(second.Level/50+1) - first.Stats.Defense*(first.Level/50+1) + rand.Intn(10)
-		if damage < 0 {
-			damage = 1 // Minimum damage is 1
-		}
+		damage = calculateDamage(second, first)
 		first.Stats.Hp -= damage
 		fmt.Printf("%s attacks %s for %d damage! (%s HP: %d)\n",
 			second.Name, first.Name, damage, first.Name, first.Stats.Hp)
@@ -80,4 +75,35 @@ func BattleTrainers(trainer1, trainer2 *models.Trainer) string {
 
 	fmt.Printf("\n%s wins the battle! with %d Pokemon remaining!\n", trainer2.Name, len(trainer2.Pokemons))
 	return trainer2.Name
+}
+
+// Damage 계산 함수
+func calculateDamage(attacker, defensor *models.Pokemon) int {
+	rand.Seed(time.Now().UnixNano())
+
+	chosenMove := attacker.Moves[rand.Intn(len(attacker.Moves))]
+	power := float64(chosenMove.Damage)
+	if power == 0 {
+		power = 20
+	}
+	fmt.Printf("%s, %s\n", attacker.Name+"["+attacker.Trainer+"]", chosenMove.Name)
+
+	isSpecialAttack := attacker.Stats.SpAtk > attacker.Stats.Attack
+	var attackFactor float64
+	var defenseFactor float64
+
+	if isSpecialAttack {
+		attackFactor = float64(attacker.Stats.SpAtk)  // Special Attack 사용
+		defenseFactor = float64(defensor.Stats.SpDef) // Special Defense 사용
+	} else {
+		attackFactor = float64(attacker.Stats.Attack)   // 일반 Attack 사용
+		defenseFactor = float64(defensor.Stats.Defense) // 일반 Defense 사용
+	}
+
+	levelFactor := (2*float64(attacker.Level))/5.0 + 2
+	modifier := 1.0
+
+	// Damage 계산 공식
+	baseDamage := (((levelFactor * power * attackFactor / defenseFactor) / 50) + 2) * modifier
+	return int(baseDamage)
 }
