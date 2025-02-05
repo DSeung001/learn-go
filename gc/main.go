@@ -20,7 +20,7 @@ func pcInfo() {
 
 // gc? 설정은 뭐 아래처럼 되는데 profile도 해봐야할듯?
 func main() {
-	pcInfo()
+	//pcInfo()
 
 	// GC 튜닝: GOGC 값을 50으로 설정
 	// 기본 값은 100 = 100%
@@ -47,7 +47,7 @@ func main() {
 		fmt.Printf("GC 횟수: %d, HeapAlloc: %.2fMB, 다음 GC 임계값: %.2fMB\n",
 			stats.NumGC, toMB(stats.HeapAlloc), toMB(stats.NextGC))
 
-		pcInfo()
+		//pcInfo()
 		// 예시에서는 10번의 GC 이후 종료합니다.
 		if stats.NumGC >= 50 {
 			break
