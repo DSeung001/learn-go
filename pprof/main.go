@@ -20,7 +20,11 @@ func (a *TestApp) Close() {
 
 // fd.Open 함수를 사용하여 파일 개방, 이 함수는 파일을 오픈 함과 프로파일링 측정을 같이 함
 func (a *TestApp) open(name string) {
-	f, _ := fd.Open(name)
+	f, err := fd.Open(name)
+	if err != nil {
+		log.Printf("File Not Found : %v", err)
+		return // 에러 발생 시 추가하지 않음
+	}
 	a.files = append(a.files, f)
 }
 
@@ -53,7 +57,7 @@ func main() {
 	// No matter how many files we opened in the past...
 	// 프로파일링 작업을 점검하기 위해 먼저 10개의 파일을 열고 닫고를 10번 반복하는데, 테스트 목적이므로 임의의 파일을 지정
 	for i := 0; i < 10; i++ {
-		a.OpenTenFiles("/dev/null")
+		a.OpenTenFiles("./test.txt")
 		a.Close()
 	}
 
