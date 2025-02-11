@@ -7,11 +7,13 @@ toolchain go1.23.4
 require (
 	github.com/corona10/goimagehash v1.1.0 // indirect
 	github.com/disintegration/imaging v1.6.2 // indirect
+	github.com/felixge/fgprof v0.9.5 // indirect
 	github.com/flopp/go-findfont v0.1.0 // indirect
 	github.com/fogleman/gg v1.3.0 // indirect
 	github.com/goccy/go-graphviz v0.2.9 // indirect
 	github.com/golang/freetype v0.0.0-20170609003504-e2365dfdc4a0 // indirect
 	github.com/google/go-cmp v0.6.0 // indirect
+	github.com/google/pprof v0.0.0-20240227163752-401108e1b7e7 // indirect
 	github.com/nfnt/resize v0.0.0-20180221191011-83c6a9932646 // indirect
 	github.com/tetratelabs/wazero v1.8.1 // indirect
 	github.com/yuin/goldmark v1.4.13 // indirect
