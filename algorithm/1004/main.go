@@ -1,44 +1,91 @@
 package main
 
 import (
-	"bufio"
 	"fmt"
-	"os"
+	"slices"
+	"sync"
+	"time"
 )
 
-func main() {
-	reader := bufio.NewReader(os.Stdin)
-	var testCases int
+var counter int
+var mu sync.Mutex
+var rmu sync.RWMutex
 
-	// 테스트 케이스 입력
-	fmt.Fscanln(reader, &testCases)
-
-	for i := 0; i < testCases; i++ {
-		// 시작점, 도착점 입력
-		var x1, y1, x2, y2 int
-		var result int
-		fmt.Fscanln(reader, &x1, &y1, &x2, &y2)
-
-		// 행성 개수
-		var n int
-		fmt.Fscanln(reader, &n)
-		for j := 0; j < n; j++ {
-			// 행성 좌표, 반지름 입력
-			var cx, cy, r int
-			fmt.Fscanln(reader, &cx, &cy, &r)
-			if isCenterIn(x1, y1, cx, cy, r) != isCenterIn(x2, y2, cx, cy, r) {
-				result++
-			}
-		}
-		fmt.Println(result)
+func average(nums []time.Duration) time.Duration {
+	var sum time.Duration
+	for _, num := range nums {
+		sum += num
 	}
+	return sum / time.Duration(len(nums))
 }
 
-// isCenterIn : 행성의 중심이 사각형 안에 있는지 확인
-// x, y : 비교 좌표
-// cx, cy : 행성 좌표
-// r : 행성 반지름
-func isCenterIn(x, y, cx, cy, r int) bool {
-	// 값의 차가 마이너스여도 제곱이므로 상관 없음
-	return (x-cx)*(x-cx)+(y-cy)*(y-cy) < r*r
+func decreament() {
+	mu.Lock()
+	defer mu.Unlock()
+
+	// rmu.Lock()
+	// defer rmu.Unlock()
+	counter--
+}
+
+func increment() {
+	mu.Lock()
+	defer mu.Unlock()
+
+	// rmu.Lock()
+	// defer rmu.Unlock()
+	counter++
+}
+
+func main() {
+	var wg1 sync.WaitGroup
+	var wg2 sync.WaitGroup
+	var res1 []time.Duration
+	var res2 []time.Duration
+	for j := 0; j < 10; j++ {
+		startTime1 := time.Now()
+		wg1.Add(1)
+		go func() {
+			for i := 0; i < 10000; i++ {
+				wg1.Add(1)
+				go func() {
+					defer wg1.Done()
+					increment()
+				}()
+			}
+			wg1.Done()
+		}()
+		elapsedTime1 := time.Since(startTime1)
+
+		startTime2 := time.Now()
+		wg2.Add(1)
+		go func() {
+			for i := 0; i < 10000; i++ {
+				wg2.Add(1)
+				go func() {
+					defer wg2.Done()
+					decreament()
+				}()
+			}
+			wg2.Done()
+		}()
+		elapsedTime2 := time.Since(startTime2)
+
+		wg1.Wait()
+		wg2.Wait()
+
+		fmt.Println("result1", elapsedTime1)
+		fmt.Println("result2", elapsedTime2)
+
+		res1 = append(res1, elapsedTime1)
+		res2 = append(res2, elapsedTime2)
+
+	}
+
+	fmt.Println("Total counter:", counter)
+	fmt.Printf("Average time: %v\n", average(res1))
+	fmt.Printf("Max time %v\n", slices.Max(res1))
+
+	fmt.Printf("Average time: %v\n", average(res2))
+	fmt.Printf("Max time %v\n", slices.Max(res2))
 }
