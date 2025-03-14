@@ -1,0 +1,25 @@
+syntax = "proto3";
+
+package user;
+option go_package = "/proto/user;user";
+
+service UserService{
+  // Unary RPC 통해 구현 : RPC 구조 중 가장 간단한 서비스 형태
+  rpc RegisterUser(UserRequest) returns (UserResponse){}
+}
+
+// protocol buffer 에서 필드를 식별하기 위해 숫자 태그 사용
+// 이를 통해 데이터 인코딩, 호환성 유지, 효율성 측면을 챙김
+message UserRequest {
+  string last_name  = 1;
+  string first_name = 2;
+  string phone      = 3;
+  string email      = 4;
+  string gender     = 5;
+  string birth_date = 6;
+  string username   = 7;
+}
+
+message UserResponse {
+  string status = 1;
+}
