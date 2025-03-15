@@ -25,6 +25,7 @@ func BenchmarkRestRegisterParallel(b *testing.B) {
 			resp, err := http.Post("http://localhost:8080/register", "application/json", bytes.NewBuffer(data))
 			if err != nil {
 				b.Error(err)
+				continue
 			}
 			resp.Body.Close()
 		}
