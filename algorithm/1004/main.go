@@ -42,6 +42,8 @@ func main() {
 	var wg2 sync.WaitGroup
 	var res1 []time.Duration
 	var res2 []time.Duration
+	var res4 int32
+	var res3 interface{}
 	for j := 0; j < 10; j++ {
 		startTime1 := time.Now()
 		wg1.Add(1)
