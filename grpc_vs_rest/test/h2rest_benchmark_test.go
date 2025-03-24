@@ -1,26 +1,33 @@
+// 이 코드는 golang.org/x/net/http2/h2c 공식 문서를 참고하여 작성한 예시입니다.
 package test
 
 import (
 	"bytes"
+	"crypto/tls"
 	"encoding/json"
+	"net"
 	"net/http"
 	"testing"
 	"time"
 
+	"golang.org/x/net/http2"
 	_struct "grpc_vs_rest/struct"
 )
 
-func BenchmarkRestRegisterParallelHTTP1(b *testing.B) {
+func BenchmarkRestRegisterParallelHTTP2(b *testing.B) {
 	// 동시에 실행되는 고루틴 수 제한 (예: 4)
 	b.SetParallelism(4)
 
-	// 단일 연결을 사용하도록 http.Transport 설정
+	// HTTP/2(h2c) 전용 클라이언트 설정: TLS 없이 HTTP/2 연결 생성
 	client := &http.Client{
-		Transport: &http.Transport{
-			MaxIdleConns:        100,
-			MaxIdleConnsPerHost: 100,
-			IdleConnTimeout:     90 * time.Second,
+		Transport: &http2.Transport{
+			AllowHTTP: true, // TLS 없이 HTTP/2 사용 허용
+			// DialTLS를 재정의하여 일반 TCP 연결을 반환함으로써 TLS 없이 연결 생성
+			DialTLS: func(network, addr string, cfg *tls.Config) (net.Conn, error) {
+				return net.Dial(network, addr)
+			},
 		},
+		Timeout: 10 * time.Second,
 	}
 
 	user := _struct.User{
