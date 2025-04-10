@@ -56,9 +56,11 @@ func processVideo(client pb.VideoServiceClient, filePath string) error {
 				break
 			}
 
+			// (옵션) 프로토콜 버퍼에 파일 형식 같은 메타데이터를 넣을 수도 있음
 			req := &pb.VideoChunk{
 				Data:     buf[:n],
 				Sequence: sequence,
+				// FileType: "mp4",  // 필요시 추가
 			}
 			sequence++
 			if err := stream.Send(req); err != nil {
@@ -107,7 +109,7 @@ func main() {
 	defer conn.Close()
 
 	client := pb.NewVideoServiceClient(conn)
-	if err := processVideo(client, "../video.mp4"); err != nil {
+	if err := processVideo(client, "../video_faststart.mp4"); err != nil {
 		fmt.Printf("프로세싱 오류: %v\n", err)
 	}
 }
