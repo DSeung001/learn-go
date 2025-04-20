@@ -1,0 +1,26 @@
+syntax = "proto3";
+
+package videopb;
+option go_package = "proto/videopb;videopb";
+
+// 양방향 스트리밍을 위한 서비스 정의
+service VideoService {
+  // 클라이언트가 VideoChunk 메시지를 전송하면, 서버는 ProcessingStatus 메시지를 스트리밍으로 응답
+  rpc ProcessVideo(stream VideoChunk) returns (stream ProcessingStatus);
+}
+
+message VideoChunk {
+  // 동영상 데이터 청크 (바이너리)
+  bytes data = 1;
+  // 청크 순서 번호 (전송 순서 식별용)
+  int32 sequence = 2;
+}
+
+message ProcessingStatus {
+  // 처리된 청크의 순서 번호
+  int32 sequence = 1;
+  // 처리 상태 메시지 (예: "processed")
+  string status = 2;
+  // 처리에 소요된 시간 (초 단위)
+  float processingTime = 3;
+}

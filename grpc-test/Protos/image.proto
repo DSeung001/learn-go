@@ -1,0 +1,21 @@
+syntax = "proto3";
+
+package image;
+
+// 아래 줄에서 경로와 패키지 이름을 상황에 맞게 변경하세요.
+option go_package = "github.com/dseung001/grpc-test/Protos;image";
+
+service ImageService {
+  // client 스트리밍 방식: client가 여러 이미지를 보낸 후 서버가 응답
+  rpc UploadImage(stream ImageRequest) returns (UploadStatus);
+}
+
+message ImageRequest {
+  bytes image_data = 1;
+  string image_name = 2;
+}
+
+message UploadStatus {
+  bool success = 1;
+  string message = 2;
+}
