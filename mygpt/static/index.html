@@ -2,15 +2,29 @@
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
-    <title>실시간 GPT 채팅</title>
+    <title>AI Story Teller</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
+<div id="side-list">
+    <h2>저장된 스토리</h2>
+    <ul id="saved-list"></ul>
+</div>
 <div id="chat-container">
+    <h1 id="service-title">AI 스토리텔러</h1>
     <div id="messages"></div>
     <div class="input-container">
-        <input id="input" placeholder="메시지를 입력하세요" autofocus />
-        <button id="send">전송</button>
+        <input id="input" placeholder="스토리 키워드를 입력하세요 (예: 용감한 고양이, 우주 여행 등)" autofocus />
+        <button id="send">스토리 생성</button>
+        <button id="save">저장</button>
+    </div>
+    <div id="desc">키워드를 입력하면 영어로 스토리를 만들고, 한글 번역도 함께 보여줍니다.</div>
+</div>
+<div id="popup" class="hidden">
+    <div id="popup-content">
+        <button id="close-popup">닫기</button>
+        <h3 id="popup-keyword"></h3>
+        <pre id="popup-story"></pre>
     </div>
 </div>
 <script src="app.js"></script>

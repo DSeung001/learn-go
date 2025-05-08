@@ -10,3 +10,4 @@ ollama rm llama3.2
 - ollama 한글 모델 찾기
 - 학습이 되는 지 여부
 - 혹시 그림도 그릴 수 있나?
+- ollama app/lifestyle 파일 분석
