@@ -93,7 +93,7 @@ func handleOllama(conn *websocket.Conn, hub *Hub, userMsg []byte) {
 	}
 
 	// 4) 제목 요약 프롬프트
-	titlePrompt := "Summarize the following story in 10 words or less for a title:\n" + englishStory
+	titlePrompt := "Summarize title:\n" + englishStory
 	titleReq := &api.ChatRequest{
 		Model: "llama3.2",
 		Messages: []api.Message{
