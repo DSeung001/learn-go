@@ -23,13 +23,18 @@ ws.onmessage = ({ data }) => {
     // JSON 결과 메시지 분리 처리
     if (data.startsWith("__STORY_JSON__")) {
         lastJsonResponse = data.replace("__STORY_JSON__", "");
-        // 번역본도 채팅방에 표시
         try {
             const obj = JSON.parse(lastJsonResponse);
-            // 마지막 assistant 메시지(영문)에 번역본 추가
+            // 채팅방에 제목, 영문스토리, 한글스토리, 영문요약, 한글요약 모두 표시
             const responseEl = document.getElementById("current-response");
-            if (responseEl && obj.koeanStory) {
-                responseEl.innerHTML += `<div style='margin-top:12px;color:#06b6d4;font-size:0.98rem'><b>한국어 번역</b><br>${obj.koeanStory}</div>`;
+            if (responseEl) {
+                let html = "";
+                if (obj.title) html += `<div style='font-weight:bold;font-size:1.1rem;color:#4f46e5;margin-bottom:6px'>${obj.title}</div>`;
+                if (obj.englishStory) html += `<div style='margin-bottom:10px'><b>영어 본문</b><br>${obj.englishStory}</div>`;
+                if (obj.koreanStory) html += `<div style='color:#06b6d4;margin-bottom:10px'><b>한글 본문</b><br>${obj.koreanStory}</div>`;
+                if (obj.englishSummary) html += `<div style='color:#64748b;margin-bottom:6px'><b>영문 요약</b><br>${obj.englishSummary}</div>`;
+                if (obj.koreanSummary) html += `<div style='color:#64748b'><b>한글 요약</b><br>${obj.koreanSummary}</div>`;
+                responseEl.innerHTML = html;
             }
         } catch {}
         return;
@@ -37,35 +42,28 @@ ws.onmessage = ({ data }) => {
     // 메시지 완료 신호 확인
     if (data.includes("__MESSAGE_COMPLETE__")) {
         isReceiving = false;
-        // 완료된 대화 저장
         if (chatHistory.length > 0 && chatHistory[chatHistory.length - 1].role === "user") {
             chatHistory.push({ role: "assistant", content: currentResponse });
         }
-        // ID 제거
         const responseEl = document.getElementById("current-response");
         if (responseEl) {
             responseEl.removeAttribute("id");
         }
         return;
     }
-    // 응답 처리
     if (!isReceiving) {
-        // 새 응답 시작
         isReceiving = true;
         currentResponse = data;
-        // 응답을 위한 새 메시지 엘리먼트 생성
         const responseEl = document.createElement("div");
         responseEl.className = "message assistant";
         responseEl.id = "current-response";
         responseEl.textContent = currentResponse;
         messagesDiv.appendChild(responseEl);
     } else {
-        // 이미 받고 있는 응답에 텍스트 추가
         currentResponse += data;
         const responseEl = document.getElementById("current-response");
         responseEl.textContent = currentResponse;
     }
-    // 스크롤 자동 조정
     messagesDiv.scrollTop = messagesDiv.scrollHeight;
 };
 
@@ -100,9 +98,11 @@ function sendMessage() {
 // 저장 버튼 기능
 saveBtn.onclick = async function() {
     let lastKeyword = null;
-    let lastStory = null;
+    let lastEnglishStory = null;
     let lastTitle = null;
-    let lastKorean = null;
+    let lastKoreanStory = null;
+    let lastEnglishSummary = null;
+    let lastKoreanSummary = null;
     for (let i = chatHistory.length - 1; i >= 0; i--) {
         if (chatHistory[i].role === "user") {
             lastKeyword = chatHistory[i].content;
@@ -112,22 +112,27 @@ saveBtn.onclick = async function() {
     if (lastJsonResponse) {
         try {
             const obj = JSON.parse(lastJsonResponse);
-            lastStory = obj.story;
-            lastTitle = obj.title;
-            lastKorean = obj.koeanStory;
+            lastEnglishStory = obj.englishStory;
+            // **로 감싸진 부분을 title로 추출
+            const match = lastEnglishStory && lastEnglishStory.match(/\*\*(.*?)\*\*/);
+            lastTitle = match ? match[1].trim() : "Story";
+            lastKoreanStory = obj.koreanStory;
+            lastEnglishSummary = obj.englishSummary;
+            lastKoreanSummary = obj.koreanSummary;
         } catch {
-            lastStory = null;
+            lastEnglishStory = null;
             lastTitle = null;
-            lastKorean = null;
+            lastKoreanStory = null;
+            lastEnglishSummary = null;
+            lastKoreanSummary = null;
         }
     }
-    if (lastKeyword && lastStory && lastTitle) {
+    if (lastKeyword && lastEnglishStory && lastTitle) {
         await fetch("/save-story", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ keyword: lastKeyword, title: lastTitle, story: lastStory, koeanStory: lastKorean })
+            body: JSON.stringify({ keyword: lastKeyword, title: lastTitle, englishStory: lastEnglishStory, koreanStory: lastKoreanStory, englishSummary: lastEnglishSummary, koreanSummary: lastKoreanSummary })
         });
-        // 저장 후 목록 새로고침
         await loadSavedStories();
     } else {
         alert("저장할 스토리가 없습니다.");
@@ -164,9 +169,12 @@ function renderSavedList() {
 
 function showPopup(item) {
     popupKeyword.textContent = item.title || "(제목 없음)";
-    popupStory.innerHTML = `<div style='color:#6b7280;font-size:0.98rem;margin-bottom:10px'><b>키워드:</b> ${item.keyword}</div>` +
-        `<div style='margin-bottom:16px'><b>영어 스토리</b><br>${item.story}</div>` +
-        (item.korean ? `<div><b>한국어 번역</b><br>${item.korean}</div>` : "");
+    popupStory.innerHTML =
+        (item.title ? `<div style='font-weight:bold;font-size:1.1rem;color:#4f46e5;margin-bottom:6px'><b>Title</b>: ${item.title}</div><br/>` : "") +
+        (item.englishStory ? `<div style='margin-bottom:10px'><b>영어 본문</b><br>${item.englishStory}</div>` : "") +
+        (item.koreanStory ? `<div style='color:#06b6d4;margin-bottom:10px'><b>한글 본문</b><br>${item.koreanStory}</div>` : "") +
+        (item.englishSummary ? `<div style='color:#64748b;margin-bottom:6px'><b>영문 요약</b><br>${item.englishSummary}</div>` : "") +
+        (item.koreanSummary ? `<div style='color:#64748b'><b>한글 요약</b><br>${item.koreanSummary}</div>` : "");
     popup.classList.remove("hidden");
 }
 

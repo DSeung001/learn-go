@@ -17,10 +17,12 @@ func saveStoryHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	type Req struct {
-		Keyword    string `json:"keyword"`
-		Title      string `json:"title"`
-		Story      string `json:"story"`
-		KoeanStory string `json:"koeanStory"`
+		Keyword        string `json:"keyword"`
+		Title          string `json:"title"`
+		EnglishStory   string `json:"englishStory"`
+		KoreanStory    string `json:"koreanStory"`
+		EnglishSummary string `json:"englishSummary"`
+		KoreanSummary  string `json:"koreanSummary"`
 	}
 	var req Req
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
@@ -30,18 +32,29 @@ func saveStoryHandler(w http.ResponseWriter, r *http.Request) {
 	if _, err := os.Stat("static/storage"); os.IsNotExist(err) {
 		os.MkdirAll("static/storage", 0755)
 	}
-	// 파일명: 제목_타임스탬프.json
-	filename := filepath.Join("static", "storage", req.Title+"_"+time.Now().Format("20060102150405")+".json")
-	filename = strings.ReplaceAll(filename, "/", "_")
+	// 파일명: 제목_타임스탬프.json (특수문자/공백 치환)
+	safeTitle := req.Title
+	invalidChars := []string{"/", "\\", ":", "*", "?", "\"", "<", ">", "|", " "}
+	for _, ch := range invalidChars {
+		safeTitle = strings.ReplaceAll(safeTitle, ch, "_")
+	}
+	filename := filepath.Join("static", "storage", safeTitle+"_"+time.Now().Format("20060102150405")+".json")
 	// 저장할 json 구조
 	storyObj := map[string]string{
-		"title":      req.Title,
-		"keyword":    req.Keyword,
-		"story":      req.Story,
-		"koeanStory": req.KoeanStory,
+		"title":          req.Title,
+		"keyword":        req.Keyword,
+		"englishStory":   req.EnglishStory,
+		"koreanStory":    req.KoreanStory,
+		"englishSummary": req.EnglishSummary,
+		"koreanSummary":  req.KoreanSummary,
 	}
 	jsonBytes, _ := json.MarshalIndent(storyObj, "", "  ")
-	os.WriteFile(filename, jsonBytes, 0644)
+	err := os.WriteFile(filename, jsonBytes, 0644)
+	if err != nil {
+		log.Println("파일 저장 실패:", err)
+		http.Error(w, "파일 저장 실패", http.StatusInternalServerError)
+		return
+	}
 	w.WriteHeader(http.StatusOK)
 }
 
@@ -72,6 +85,7 @@ func main() {
 	go hub.run()
 
 	http.Handle("/", http.FileServer(http.Dir("./static")))
+	// ws로 온 데이터는 ollama로 전송송
 	http.HandleFunc("/ws", func(w http.ResponseWriter, r *http.Request) {
 		serveWs(hub, w, r)
 	})

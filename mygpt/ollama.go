@@ -68,7 +68,7 @@ func handleOllama(conn *websocket.Conn, hub *Hub, userMsg []byte) {
 	defer cancel()
 
 	// 4) 사용자의 키워드를 받아 스토리 생성 프롬프트로 변환
-	prompt := "Write a short story in English using the following keywords: " + englishKeyword
+	prompt := "Write a short story in English using the following keywords. Put a \"**\" at the beginning and end of the title: " + englishKeyword
 	req := &api.ChatRequest{
 		Model: "llama3.2",
 		Messages: []api.Message{
@@ -76,10 +76,14 @@ func handleOllama(conn *websocket.Conn, hub *Hub, userMsg []byte) {
 		},
 	}
 
+	// 영어 본문만 실시간으로 보여줌
 	var storyBuilder strings.Builder
+	// ollama에 chat에서 반환 된 값을
 	if err := client.Chat(ctx, req, func(resp api.ChatResponse) error {
 		storyBuilder.WriteString(resp.Message.Content)
+		// 그대로 브로드 캐스팅
 		hub.broadcast <- []byte(resp.Message.Content)
+		// 이러면 허브에서 run을 통해 연결된 모든 클라이언트한테 메시지 전송송
 		return nil
 	}); err != nil {
 		log.Println("Ollama.Chat 오류:", err)
@@ -92,31 +96,46 @@ func handleOllama(conn *websocket.Conn, hub *Hub, userMsg []byte) {
 		koreanStory = "[번역 실패] " + err.Error()
 	}
 
-	// 4) 제목 요약 프롬프트
-	titlePrompt := "Summarize title:\n" + englishStory
-	titleReq := &api.ChatRequest{
-		Model: "llama3.2",
-		Messages: []api.Message{
-			{Role: "user", Content: titlePrompt},
-		},
-	}
-	var titleBuilder strings.Builder
-	if err := client.Chat(ctx, titleReq, func(resp api.ChatResponse) error {
-		titleBuilder.WriteString(resp.Message.Content)
-		return nil
-	}); err != nil {
-		titleBuilder.WriteString("Story")
-	}
-	title := strings.TrimSpace(titleBuilder.String())
-	if title == "" {
-		title = "Story"
+	// title: story에서 **로 감싸진 부분 추출
+	title := "Story"
+	if m := strings.Index(englishStory, "**"); m != -1 {
+		end := strings.Index(englishStory[m+2:], "**")
+		if end != -1 {
+			title = strings.TrimSpace(englishStory[m+2 : m+2+end])
+		}
 	}
 
-	// 마지막에만 JSON(title, story) 결과 전송
+	// summary 요약 프롬프트
+	summaryPrompt := "Summarize the story in 1-2 sentences:\n" + englishStory
+	summaryReq := &api.ChatRequest{
+		Model: "llama3.2",
+		Messages: []api.Message{
+			{Role: "user", Content: summaryPrompt},
+		},
+	}
+	var summaryBuilder strings.Builder
+	if err := client.Chat(ctx, summaryReq, func(resp api.ChatResponse) error {
+		summaryBuilder.WriteString(resp.Message.Content)
+		return nil
+	}); err != nil {
+		summaryBuilder.WriteString("")
+	}
+	englishSummary := strings.TrimSpace(summaryBuilder.String())
+
+	// koreanSummary: englishSummary를 한국어로 번역
+	koreanSummary, err := translateText(englishSummary, "en", "ko")
+	if err != nil {
+		log.Println("summary 번역 실패:", err)
+		koreanSummary = "[번역 실패] " + err.Error()
+	}
+
+	// 마지막에만 JSON(title, story, storyKorean, englishSummary, koreanSummary) 결과 전송
 	result := map[string]string{
-		"title":      title,
-		"story":      englishStory,
-		"koeanStory": koreanStory,
+		"title":          title,
+		"englishStory":   englishStory,
+		"koreanStory":    koreanStory,
+		"englishSummary": englishSummary,
+		"koreanSummary":  koreanSummary,
 	}
 	jsonBytes, _ := json.Marshal(result)
 	hub.broadcast <- []byte("__STORY_JSON__" + string(jsonBytes))
