@@ -1,4 +1,4 @@
-const ws = new WebSocket("ws://localhost:8080/ws");
+const ws = new WebSocket("ws://localhost:8081/ws");
 const messagesDiv = document.getElementById("messages");
 const input = document.getElementById("input");
 const sendBtn = document.getElementById("send");
@@ -125,14 +125,32 @@ saveBtn.onclick = async function() {
         await fetch("/save-story", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ keyword: lastKeyword, title: lastTitle, story: lastStory + "\n\n---\n[한국어 번역]\n" + (lastKorean || "") })
+            body: JSON.stringify({ keyword: lastKeyword, title: lastTitle, story: lastStory, koeanStory: lastKorean })
         });
-        savedStories.push({ keyword: lastKeyword, title: lastTitle, story: lastStory, korean: lastKorean });
-        renderSavedList();
+        // 저장 후 목록 새로고침
+        await loadSavedStories();
     } else {
         alert("저장할 스토리가 없습니다.");
     }
 };
+
+// 저장된 스토리 목록 서버에서 불러오기
+async function loadSavedStories() {
+    const res = await fetch("/list-stories");
+    const files = await res.json();
+    savedStories.length = 0;
+    for (const file of files) {
+        try {
+            const storyRes = await fetch("/story/" + encodeURIComponent(file));
+            const storyObj = await storyRes.json();
+            savedStories.push(storyObj);
+        } catch {}
+    }
+    renderSavedList();
+}
+
+// 페이지 로드시 저장된 스토리 목록 불러오기
+window.addEventListener("DOMContentLoaded", loadSavedStories);
 
 function renderSavedList() {
     savedList.innerHTML = "";
